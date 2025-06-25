@@ -52,7 +52,7 @@ else
   echo "   /usr/lib/postgresql/16/bin/pg_ctl -D /var/lib/postgresql/16/main start"
 fi
 
-# 安装 Docker
+# 安装 Docker（简化方式）
 if ! command -v docker &>/dev/null; then
   echo "🐳 安装 Docker..."
   sudo apt install -y docker.io
@@ -62,17 +62,26 @@ else
   echo "✅ Docker 已安装: $(docker --version)"
 fi
 
-# 安装 Docker Compose 插件
-if ! docker compose version &>/dev/null; then
-  echo "📦 安装 Docker Compose 插件..."
-  sudo apt install -y docker-compose-plugin
+# 安装 docker-compose 到 $HOME/bin（绕过 noexec 问题）
+echo "🔧 安装 docker-compose 到 ~/bin 目录..."
+mkdir -p "$HOME/bin"
+
+COMPOSE_URL="https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-$(uname -s)-$(uname -m)"
+curl -fsSL "$COMPOSE_URL" -o "$HOME/bin/docker-compose"
+chmod +x "$HOME/bin/docker-compose"
+
+# 添加到 PATH（若未配置）
+if ! echo "$PATH" | grep -q "$HOME/bin"; then
+  echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+  export PATH="$HOME/bin:$PATH"
+  echo "📌 已将 ~/bin 添加到 PATH。请重启终端或执行： source ~/.bashrc"
 fi
 
-# 验证 Docker Compose
-if docker compose version &>/dev/null; then
-  echo "✅ Docker Compose 已安装: $(docker compose version)"
+# 检查是否安装成功
+if command -v docker-compose &>/dev/null; then
+  echo "✅ docker-compose 安装成功: $(docker-compose --version)"
 else
-  echo "❌ Docker Compose 安装失败，请检查日志"
+  echo "❌ docker-compose 安装失败，请手动检查 ~/bin/docker-compose 是否可执行"
 fi
 
-echo "✅ 所有依赖已安装完毕，你现在可以开始部署 NocoBase 了，！"
+echo "✅ 所有依赖已安装完毕，你现在可以开始部署 NocoBase 了！"
