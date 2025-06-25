@@ -75,4 +75,4 @@ else
   echo "❌ Docker Compose 安装失败，请检查日志"
 fi
 
-echo "✅ 所有依赖已安装完毕，你现在可以开始部署 NocoBase 了！"
+echo "✅ 所有依赖已安装完毕，你现在可以开始部署 NocoBase 了，！"
