@@ -64,10 +64,20 @@ class NocoBaseClient:
             raise RuntimeError("Failed to obtain token")
         self.token = token
 
-    def create_collection(self, name: str, fields: list[dict]) -> dict:
+    def create_collection(self, name: str, template: str = "general") -> dict:
         """创建集合（数据表）"""
-        values = {"name": name, "template": "general", "fields": fields}
-        return self._request("POST", "collections:create", data={"values": values})
+        payload = {"name": name, "template": template}
+        return self._request("POST", "collections", data=payload)
+
+    def create_field(self, collection_name: str, field: dict) -> dict:
+        """在指定集合中创建字段"""
+        values = {
+            "collectionName": collection_name,
+            "name": field.get("name"),
+            "type": field.get("type"),
+            "interface": field.get("interface"),
+        }
+        return self._request("POST", "fields", data=values)
 
     def create_record(self, collection: str, values: dict) -> dict:
         """在指定集合中创建记录"""

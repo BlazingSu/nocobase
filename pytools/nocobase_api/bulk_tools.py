@@ -16,7 +16,10 @@ def create_tables_from_sql(client: NocoBaseClient, sql_path: str):
     for table in tables:
         # table 为解析后的结构，包括集合名称和字段列表
         logging.info("Creating collection %s", table["name"])
-        client.create_collection(table["name"], table["fields"])
+        client.create_collection(table["name"])
+        for field in table["fields"]:
+            logging.info("Creating field %s.%s", table["name"], field["name"])
+            client.create_field(table["name"], field)
 
 
 def import_csv(client: NocoBaseClient, collection: str, csv_path: str):
