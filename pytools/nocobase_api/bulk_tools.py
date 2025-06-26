@@ -1,4 +1,5 @@
 import csv
+import logging
 from .client import NocoBaseClient
 from .sql_utils import parse_sql_file
 
@@ -12,6 +13,7 @@ def create_tables_from_sql(client: NocoBaseClient, sql_path: str):
     tables = parse_sql_file(sql_path)
     for table in tables:
         # table 为解析后的结构，包括集合名称和字段列表
+        logging.info("Creating collection %s", table["name"])
         client.create_collection(table["name"], table["fields"])
 
 
@@ -21,5 +23,6 @@ def import_csv(client: NocoBaseClient, collection: str, csv_path: str):
         reader = csv.DictReader(f)
         for row in reader:
             # 每一行作为字典传递给 API 创建记录
+            logging.debug("Creating record: %s", row)
             client.create_record(collection, row)
 
