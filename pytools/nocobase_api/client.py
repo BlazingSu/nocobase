@@ -8,9 +8,12 @@ import urllib.parse
 class NocoBaseClient:
     """与 NocoBase REST API 交互的简单客户端"""
 
-    def __init__(self, base_url: str, username: str, password: str, authenticator: str = "password"):
+    def __init__(self, base_url: str, username: str, password: str, authenticator: str = "basic"):
         """初始化客户端并保存认证信息"""
         self.base_url = base_url.rstrip('/')
+        # 如果末尾未包含 /api，则自动补全，避免用户遗漏
+        if not self.base_url.endswith('/api'):
+            self.base_url += '/api'
         self.username = username
         self.password = password
         self.authenticator = authenticator
@@ -20,6 +23,9 @@ class NocoBaseClient:
         """内部请求方法，用于发送 HTTP 请求"""
         url = f"{self.base_url}/{path.lstrip('/')}"
         headers = {"Content-Type": "application/json"}
+        # 登录方式标识，默认为 "basic"，可在实例化时传入
+        if self.authenticator:
+            headers["X-Authenticator"] = self.authenticator
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"  # 认证信息
         body = None
