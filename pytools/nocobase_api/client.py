@@ -37,15 +37,23 @@ class NocoBaseClient:
         logging.debug("%s %s", method, url)
         if data is not None:
             logging.debug("Payload: %s", data)
+        logging.debug("Request headers: %s", headers)
         try:
             with urllib.request.urlopen(req) as resp:
+                status = resp.status
                 resp_data = resp.read()
         except urllib.error.HTTPError as e:
-            logging.error("HTTP %s error for %s: %s", e.code, url, e.read().decode())
+            body = e.read().decode()
+            logging.error("HTTP %s error for %s: %s", e.code, url, body)
             raise
-        if not resp_data:
-            return {}
-        return json.loads(resp_data.decode())
+        except urllib.error.URLError as e:
+            logging.error("Failed to reach %s: %s", url, e.reason)
+            raise
+        logging.debug("Response status: %s", status)
+        if resp_data:
+            logging.debug("Response body: %s", resp_data.decode())
+            return json.loads(resp_data.decode())
+        return {}
 
     def sign_in(self) -> None:
         """登录并保存返回的 token"""

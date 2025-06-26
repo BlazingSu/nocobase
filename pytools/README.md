@@ -13,7 +13,8 @@ python -m nocobase_api --base-url http://localhost:13000/api \
     --username admin --password secret \
     --authenticator goout \
     --sql schema.sql \
-    --csv data.csv --collection posts
+    --csv data.csv --collection posts \
+    --debug
 ```
 
 参数说明：
@@ -27,6 +28,7 @@ python -m nocobase_api --base-url http://localhost:13000/api \
 - `--sql`：包含 `CREATE TABLE` 语句的 SQL 文件，可根据其中定义创建集合。
 - `--csv`：要导入的 CSV 文件。
 - `--collection`：CSV 数据要导入的集合名称。
+- `--debug`：输出调试信息，便于排查脚本执行过程中的问题。
 
 根据需要选择参数：只创建集合时只需提供 `--sql`；仅导入数据时需要同时指定 `--csv` 与 `--collection`。
 

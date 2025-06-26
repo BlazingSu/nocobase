@@ -38,11 +38,14 @@ def main():
         format="%(message)s",
     )
 
+    logging.debug("Arguments: %s", vars(args))
+
     logging.info("Connecting to NocoBase at %s", args.base_url)
 
     client = NocoBaseClient(
         args.base_url, args.username, args.password, authenticator=args.authenticator
     )
+    logging.debug("Client initialized")
     # 登录以获取 token
     client.sign_in()
     logging.info("Signed in successfully")

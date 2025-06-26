@@ -1,4 +1,5 @@
 import re
+import logging
 from typing import List, Dict
 
 """SQL 辅助函数，用于解析建表语句"""
@@ -24,13 +25,19 @@ def map_sql_type(sql_type: str) -> str:
 
 def parse_sql_file(path: str) -> List[Dict[str, any]]:
     """解析 SQL 文件，返回集合及字段信息"""
+    logging.debug("Reading SQL file: %s", path)
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
+    logging.debug("SQL snippet: %s", content[:200])
 
     tables = []
     # 匹配 CREATE TABLE 语句
     pattern = re.compile(r"CREATE\s+TABLE\s+`?(\w+)`?\s*\((.*?)\);", re.S | re.I)
-    for table_name, body in pattern.findall(content):
+    matches = pattern.findall(content)
+    if not matches:
+        logging.warning("No CREATE TABLE statements found in %s", path)
+    for table_name, body in matches:
+        logging.debug("Parsing table %s", table_name)
         fields = []
         # 拆分列定义，忽略括号内的逗号
         columns = [c.strip() for c in re.split(r",\s*(?![^()]*\))", body) if c.strip()]
@@ -44,6 +51,9 @@ def parse_sql_file(path: str) -> List[Dict[str, any]]:
             field_type = map_sql_type(dtype)
             # 文本字段使用 textarea，其余使用 input
             interface = "textarea" if field_type == "text" else "input"
-            fields.append({"name": name, "type": field_type, "interface": interface})
+            field_def = {"name": name, "type": field_type, "interface": interface}
+            logging.debug("Field parsed: %s", field_def)
+            fields.append(field_def)
         tables.append({"name": table_name, "fields": fields})
+    logging.debug("Parsed tables: %s", tables)
     return tables
