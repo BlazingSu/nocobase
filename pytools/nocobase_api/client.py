@@ -1,6 +1,8 @@
 import json
+import logging
 import urllib.request
 import urllib.parse
+import urllib.error
 
 """NocoBase REST API 简易客户端"""
 
@@ -32,11 +34,18 @@ class NocoBaseClient:
         if data is not None:
             body = json.dumps(data).encode()
         req = urllib.request.Request(url, data=body, headers=headers, method=method)
-        with urllib.request.urlopen(req) as resp:
-            resp_data = resp.read()
-            if not resp_data:
-                return {}
-            return json.loads(resp_data.decode())
+        logging.debug("%s %s", method, url)
+        if data is not None:
+            logging.debug("Payload: %s", data)
+        try:
+            with urllib.request.urlopen(req) as resp:
+                resp_data = resp.read()
+        except urllib.error.HTTPError as e:
+            logging.error("HTTP %s error for %s: %s", e.code, url, e.read().decode())
+            raise
+        if not resp_data:
+            return {}
+        return json.loads(resp_data.decode())
 
     def sign_in(self) -> None:
         """登录并保存返回的 token"""

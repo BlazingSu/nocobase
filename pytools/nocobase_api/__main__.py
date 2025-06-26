@@ -1,4 +1,5 @@
 import argparse
+import logging
 from .client import NocoBaseClient
 from .bulk_tools import create_tables_from_sql, import_csv
 
@@ -25,20 +26,35 @@ def main():
     # 选项：导入 CSV 数据及对应集合名称
     parser.add_argument("--csv", help="要导入的 CSV 文件")
     parser.add_argument("--collection", help="CSV 数据对应的集合名称")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="输出调试信息",
+    )
     args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.debug else logging.INFO,
+        format="%(message)s",
+    )
+
+    logging.info("Connecting to NocoBase at %s", args.base_url)
 
     client = NocoBaseClient(
         args.base_url, args.username, args.password, authenticator=args.authenticator
     )
     # 登录以获取 token
     client.sign_in()
+    logging.info("Signed in successfully")
 
     if args.sql:
         # 根据 SQL 文件创建数据表
+        logging.info("Creating collections from %s", args.sql)
         create_tables_from_sql(client, args.sql)
 
     if args.csv and args.collection:
         # 将 CSV 文件中的记录导入指定集合
+        logging.info("Importing %s into %s", args.csv, args.collection)
         import_csv(client, args.collection, args.csv)
 
 
