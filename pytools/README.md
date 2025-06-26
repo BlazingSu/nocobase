@@ -5,20 +5,25 @@
 
 ## 使用方法
 
-在命令行中直接运行模块：
+在命令行中直接运行模块（`--base-url` 末尾应包含 `/api`，如未提供会自
+动补全）：
 
 ```bash
 python -m nocobase_api --base-url http://localhost:13000/api \
     --username admin --password secret \
+    --authenticator goout \
     --sql schema.sql \
     --csv data.csv --collection posts
 ```
 
 参数说明：
 
-- `--base-url`：API 地址，例如 `http://localhost:13000/api`。
+- `--base-url`：API 地址，例如 `http://localhost:13000/api`。若未以
+  `/api` 结尾，脚本会自动补全。
 - `--username`：登录用户名。
 - `--password`：登录密码。
+- `--authenticator`：登录方式标识，默认为 `basic`，根据后台配置选择
+  `goout` 等值。
 - `--sql`：包含 `CREATE TABLE` 语句的 SQL 文件，可根据其中定义创建集合。
 - `--csv`：要导入的 CSV 文件。
 - `--collection`：CSV 数据要导入的集合名称。
