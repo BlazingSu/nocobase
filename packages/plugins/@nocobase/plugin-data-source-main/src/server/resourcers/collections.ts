@@ -7,7 +7,7 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import { Database } from '@nocobase/database';
+import { Database, ViewFieldInference } from '@nocobase/database';
 import lodash from 'lodash';
 
 export default {
@@ -31,9 +31,14 @@ export default {
 
       obj.fields = lodash.sortBy(
         [...collection.fields.values()].map((field) => {
-          return {
-            ...field.options,
-          };
+          const options = { ...field.options };
+          const infer = ViewFieldInference.inferToFieldType({
+            dialect: db.sequelize.getDialect(),
+            name: field.name,
+            type: field.typeToString(),
+          });
+          Object.assign(options, infer);
+          return options;
         }),
         '__sort',
       );
