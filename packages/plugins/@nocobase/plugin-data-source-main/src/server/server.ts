@@ -11,7 +11,6 @@ import { Filter, InheritedCollection, UniqueConstraintError } from '@nocobase/da
 import PluginErrorHandler from '@nocobase/plugin-error-handler';
 import { Plugin } from '@nocobase/server';
 import lodash from 'lodash';
-import { ViewFieldInference } from '@nocobase/database';
 import path from 'path';
 import { CollectionRepository } from '.';
 import { FieldIsDependedOnByOtherError } from './errors/field-is-depended-on-by-other';
@@ -505,22 +504,6 @@ export class PluginDataSourceMainServer extends Plugin {
       }
     };
 
-    const addPossibleTypes = (fields) => {
-      for (const field of lodash.castArray(fields)) {
-        const collection = this.app.db.getCollection(field.get('collectionName'));
-        const collectionField = collection?.getField(field.get('name'));
-        if (!collectionField) continue;
-        const infer = ViewFieldInference.inferToFieldType({
-          dialect: this.app.db.sequelize.getDialect(),
-          name: collectionField.name,
-          type: collectionField.typeToString(),
-        });
-        const opts = field.get('options') || {};
-        Object.assign(opts, infer);
-        field.set('options', opts);
-      }
-    };
-
     this.app.resourceManager.use(async function handleFieldSourceMiddleware(ctx, next) {
       await next();
 
@@ -534,21 +517,17 @@ export class PluginDataSourceMainServer extends Plugin {
           if (collection.get('view')) {
             const fields = collection.fields;
             handleFieldSource(fields);
-            addPossibleTypes(fields);
           }
         }
       }
 
       //handle collections:fields:list
       if (ctx.action.resourceName == 'collections.fields' && ctx.action.actionName == 'list') {
-        const rows = ctx.action.params?.paginate == 'false' ? ctx.body : ctx.body.rows;
-        handleFieldSource(rows);
-        addPossibleTypes(rows);
+        handleFieldSource(ctx.action.params?.paginate == 'false' ? ctx.body : ctx.body.rows);
       }
 
       if (ctx.action.resourceName == 'collections.fields' && ctx.action.actionName == 'get') {
         handleFieldSource(ctx.body);
-        addPossibleTypes(ctx.body);
       }
     });
 
