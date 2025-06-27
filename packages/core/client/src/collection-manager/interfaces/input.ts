@@ -52,15 +52,11 @@ export class InputFieldInterface extends CollectionFieldInterface {
   sortable = true;
   default = {
     interface: 'input',
-    fieldType: 'string',
     type: 'string',
     uiSchema: {
       type: 'string',
       'x-component': 'Input',
     },
-  };
-  availableOptions = {
-    string: ['string', 'uid'],
   };
   availableTypes = ['string', 'uid'];
   hasDefaultValue = true;

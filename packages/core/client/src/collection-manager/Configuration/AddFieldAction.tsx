@@ -168,7 +168,6 @@ export const AddFieldAction = (props) => {
   const [visible, setVisible] = useState(false);
   const [targetScope, setTargetScope] = useState();
   const [schema, setSchema] = useState({});
-  const [fieldTypeOptions, setFieldTypeOptions] = useState<any[]>([]);
   const compile = useCompile();
   const { t } = useTranslation();
   const { isDialect } = useDialect();
@@ -284,10 +283,8 @@ export const AddFieldAction = (props) => {
         //@ts-ignore
         const targetScope = e.item.props['data-targetScope'];
         targetScope && setTargetScope(targetScope);
-        const iface = getInterface(e.key);
-        const schema = getSchema(iface, record, compile);
+        const schema = getSchema(getInterface(e.key), record, compile);
         if (schema) {
-          setFieldTypeOptions(iface?.getAvailableOptions?.() || []);
           setSchema(schema);
           setVisible(true);
         }
@@ -336,7 +333,6 @@ export const AddFieldAction = (props) => {
               isDialect,
               disabledJSONB: false,
               scopeKeyOptions,
-              fieldTypeOptions,
               createMainOnly: true,
               editMainOnly: true,
               ...scope,
