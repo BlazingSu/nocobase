@@ -20,11 +20,15 @@ export class TextareaFieldInterface extends CollectionFieldInterface {
   title = '{{t("Long text")}}';
   default = {
     interface: 'textarea',
+    fieldType: 'text',
     type: 'text',
     uiSchema: {
       type: 'string',
       'x-component': 'Input.TextArea',
     },
+  };
+  availableOptions = {
+    text: ['text', 'json', 'string'],
   };
   availableTypes = ['text', 'json', 'string'];
   hasDefaultValue = true;

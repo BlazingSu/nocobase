@@ -143,6 +143,7 @@ export const EditFieldAction = (props) => {
   const { getInterface, collections, getCollection } = useCollectionManager_deprecated();
   const [visible, setVisible] = useState(false);
   const [schema, setSchema] = useState({});
+  const [fieldTypeOptions, setFieldTypeOptions] = useState<any[]>([]);
   const api = useAPIClient();
   const { t } = useTranslation();
   const compile = useCompile();
@@ -197,6 +198,7 @@ export const EditFieldAction = (props) => {
               defaultValues.autoCreateReverseField = true;
             }
             const schema = getSchema(interfaceConf, defaultValues, record, compile, getContainer);
+            setFieldTypeOptions(interfaceConf?.getAvailableOptions?.() || []);
             setSchema(schema);
             setVisible(true);
           }}
@@ -216,6 +218,7 @@ export const EditFieldAction = (props) => {
             isDialect,
             disabledJSONB: true,
             scopeKeyOptions,
+            fieldTypeOptions,
             createMainOnly: false,
             ...scope,
           }}
