@@ -14,8 +14,6 @@ import { Application } from '@nocobase/server';
 import path from 'path';
 import PluginDataSourceManagerServer from '../plugin';
 import { DataSourcesRolesModel } from './data-sources-roles-model';
-import { ViewFieldInference, fieldTypeMap } from '@nocobase/database';
-import _ from 'lodash';
 
 const availableActions: {
   [key: string]: AvailableActionOptions;
@@ -158,7 +156,6 @@ export class DataSourceModel extends Model {
 
   private async loadLocalData() {
     const dataSourceKey = this.get('key');
-    const dialect = this.get('type');
 
     const remoteCollections = await this.db.getRepository('dataSourcesCollections').find({
       filter: {
@@ -182,28 +179,6 @@ export class DataSourceModel extends Model {
     for (const remoteField of remoteFields) {
       const remoteFieldOptions = remoteField.toJSON();
       const collectionName = remoteFieldOptions.collectionName;
-
-      if (!remoteFieldOptions.possibleTypes) {
-        if (remoteFieldOptions.rawType) {
-          const result = ViewFieldInference.inferToFieldType({
-            name: remoteFieldOptions.name,
-            type: remoteFieldOptions.rawType,
-            dialect,
-          });
-          if (result.possibleTypes) {
-            remoteFieldOptions.possibleTypes = result.possibleTypes;
-          }
-        } else {
-          const dialectMap = fieldTypeMap[dialect];
-          if (dialectMap) {
-            remoteFieldOptions.possibleTypes = _.uniq(
-              Object.values(dialectMap).flatMap((v: any) =>
-                Array.isArray(v) ? v : [v],
-              ),
-            );
-          }
-        }
-      }
 
       if (!localData[collectionName]) {
         localData[collectionName] = {
