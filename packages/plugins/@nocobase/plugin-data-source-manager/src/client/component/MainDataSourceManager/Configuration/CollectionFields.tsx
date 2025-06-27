@@ -35,7 +35,7 @@ import {
   useResourceContext,
   ViewCollectionField,
 } from '@nocobase/client';
-import { message, Space, Switch, Table, TableColumnProps, Tag, Tooltip, Cascader } from 'antd';
+import { message, Space, Switch, Table, TableColumnProps, Tag, Tooltip } from 'antd';
 import React, { createContext, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -98,10 +98,6 @@ const tableContainer = css`
   }
 `;
 
-const createFieldTypeOptions = (getInterface, ifaceName: string) => {
-  return getInterface(ifaceName)?.getAvailableOptions?.() || [];
-};
-
 const titlePrompt = 'Default title for each record';
 const CurrentFields = (props) => {
   const compile = useCompile();
@@ -125,35 +121,6 @@ const CurrentFields = (props) => {
     {
       dataIndex: 'name',
       title: t('Field name'),
-    },
-    {
-      dataIndex: 'type',
-      title: t('Field type'),
-      render: (value, record) => {
-        const options = createFieldTypeOptions(getInterface, record.interface);
-        return record.possibleTypes ? (
-          <Cascader
-            size="small"
-            options={options}
-            defaultValue={[record.fieldType || value]}
-            onChange={async (_, [type]) => {
-              setLoadingRecord(record);
-              await api.request({
-                url: `collections.fields:update?filterByTk=${record.name}`,
-                method: 'post',
-                data: { type },
-              });
-              ctx?.refresh?.();
-              await props.refreshAsync();
-              setLoadingRecord(null);
-              refreshCM();
-              message.success(t('Saved successfully'));
-            }}
-          />
-        ) : (
-          <Tag>{value}</Tag>
-        );
-      },
     },
     {
       dataIndex: 'interface',
@@ -271,35 +238,6 @@ const InheritFields = (props) => {
     {
       dataIndex: 'name',
       title: t('Field name'),
-    },
-    {
-      dataIndex: 'type',
-      title: t('Field type'),
-      render: (value, record) => {
-        const options = createFieldTypeOptions(getInterface, record.interface);
-        return record.possibleTypes ? (
-          <Cascader
-            size="small"
-            options={options}
-            defaultValue={[record.fieldType || value]}
-            onChange={async (_, [type]) => {
-              setLoadingRecord(record);
-              await api.request({
-                url: `collections.fields:update?filterByTk=${record.name}`,
-                method: 'post',
-                data: { type },
-              });
-              ctx?.refresh?.();
-              await props.refreshAsync();
-              setLoadingRecord(null);
-              refreshCM();
-              message.success(t('Saved successfully'));
-            }}
-          />
-        ) : (
-          <Tag>{value}</Tag>
-        );
-      },
     },
     {
       dataIndex: 'interface',

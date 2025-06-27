@@ -533,16 +533,6 @@ export const defaultProps = {
     description:
       "{{t('Randomly generated and can be modified. Support letters, numbers and underscores, must start with an letter.')}}",
   },
-  fieldType: {
-    type: 'string',
-    title: '{{t("Field type")}}',
-    'x-disabled': '{{ createOnly }}',
-    'x-decorator': 'FormItem',
-    'x-component': 'Cascader',
-    'x-component-props': {
-      options: '{{ fieldTypeOptions }}',
-    },
-  },
 };
 
 export const recordPickerViewer = {

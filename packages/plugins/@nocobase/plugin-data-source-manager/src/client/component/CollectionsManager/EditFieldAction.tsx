@@ -195,7 +195,6 @@ const EditFieldAction = (props) => {
   };
   const [visible, setVisible] = useState(false);
   const [schema, setSchema] = useState({});
-  const [fieldTypeOptions, setFieldTypeOptions] = useState<any[]>([]);
   const api = useAPIClient();
   const { t } = useTranslation();
   const compile = useCompile();
@@ -253,7 +252,6 @@ const EditFieldAction = (props) => {
               compile,
               getContainer,
             });
-            setFieldTypeOptions(interfaceConf?.getAvailableOptions?.() || []);
             setSchema(schema);
             setVisible(true);
           }}
@@ -271,7 +269,6 @@ const EditFieldAction = (props) => {
             collections: currentCollections,
             isDialect,
             scopeKeyOptions,
-            fieldTypeOptions,
             disabledJSONB: true,
             ...scope,
             createOnly: false,
