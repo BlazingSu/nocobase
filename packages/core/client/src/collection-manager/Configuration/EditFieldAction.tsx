@@ -40,15 +40,6 @@ const getSchema = (
   if (properties?.name) {
     properties.name['x-disabled'] = true;
   }
-  if (record?.possibleTypes) {
-    properties.type = {
-      type: 'string',
-      title: '{{t("Field type")}}',
-      'x-decorator': 'FormItem',
-      'x-component': 'Select',
-      enum: record.possibleTypes.map((v) => ({ label: v, value: v })),
-    };
-  }
 
   return {
     type: 'object',
