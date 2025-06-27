@@ -38,6 +38,7 @@ export abstract class CollectionFieldInterface {
   };
   sortable?: boolean;
   availableTypes?: string[];
+  availableOptions?: Record<string, string[]>;
   supportDataSourceType?: string[];
   notSupportDataSourceType?: string[];
   hasDefaultValue?: boolean;
@@ -160,6 +161,25 @@ export abstract class CollectionFieldInterface {
         ],
       },
     };
+  }
+
+  getAllAvailableTypes() {
+    const optionTypes = Object.values(this.availableOptions || {}).flat();
+    return Array.from(new Set([...(this.availableTypes || []), ...optionTypes]));
+  }
+
+  getAvailableOptions() {
+    return Object.entries(this.availableOptions || {}).map(([key, values]) => ({
+      label: key,
+      value: key,
+      children: values.map((v) => ({ label: v, value: v })),
+    }));
+  }
+
+  validateFieldDataType(type: string) {
+    const all = this.getAllAvailableTypes();
+    if (all.length === 0) return true;
+    return all.includes(type);
   }
 
   addOperator(operatorOption: any) {
