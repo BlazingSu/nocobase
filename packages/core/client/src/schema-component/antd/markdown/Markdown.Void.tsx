@@ -14,7 +14,6 @@ import type { TextAreaRef } from 'antd/es/input/TextArea';
 import cls from 'classnames';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useCompile } from '../../';
 import { useCollectionRecord } from '../../../data-source';
 import { FlagProvider, useFlag } from '../../../flag-provider';
 import { useGlobalTheme } from '../../../global-theme';
@@ -29,6 +28,7 @@ import { MarkdownVoidDesigner } from './Markdown.Void.Designer';
 import { registerQrcodeWebComponent } from './qrcode-webcom';
 import { useStyles } from './style';
 import { parseMarkdown } from './util';
+import { VariableScope } from '../../../variables/VariableScope';
 
 export interface MarkdownEditorProps extends Omit<TextAreaProps, 'onSubmit'> {
   scope: any[];
@@ -147,13 +147,13 @@ export const MarkdownVoidInner: any = withDynamicSchemaProps(
     const localVariables = useLocalVariables();
     const { engine } = schema?.['x-decorator-props'] || {};
     const [loading, setLoading] = useState(false);
-    const compile = useCompile();
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
       setLoading(true);
       const cvtContentToHTML = async () => {
         setTimeout(async () => {
-          const replacedContent = await getRenderContent(engine, content, variables, localVariables, parseMarkdown);
+          const replacedContent = await getRenderContent(engine, content, variables, localVariables, parseMarkdown, t);
           setHtml(replacedContent);
         });
         setLoading(false);
@@ -212,10 +212,14 @@ export const MarkdownVoidInner: any = withDynamicSchemaProps(
 
 export const MarkdownVoid = (props) => {
   const flags = useFlag();
+  const fieldSchema = useFieldSchema();
+
   return (
-    <FlagProvider {...flags} collectionField={true}>
-      <MarkdownVoidInner {...props} />
-    </FlagProvider>
+    <VariableScope scopeId={fieldSchema?.['x-uid']} type="markdownBlock">
+      <FlagProvider {...flags} collectionField={true}>
+        <MarkdownVoidInner {...props} />
+      </FlagProvider>
+    </VariableScope>
   );
 };
 MarkdownVoid.Designer = MarkdownVoidDesigner;
