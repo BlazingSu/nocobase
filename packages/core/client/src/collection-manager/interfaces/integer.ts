@@ -25,6 +25,7 @@ export class IntegerFieldInterface extends CollectionFieldInterface {
   title = '{{t("Integer")}}';
   sortable = true;
   default = {
+    fieldType: 'bigInt',
     type: 'bigInt',
     uiSchema: {
       type: 'number',
@@ -35,6 +36,9 @@ export class IntegerFieldInterface extends CollectionFieldInterface {
       },
       'x-validator': 'integer',
     },
+  };
+  availableOptions = {
+    number: ['bigInt', 'integer', 'sort'],
   };
   availableTypes = ['bigInt', 'integer', 'sort'];
   hasDefaultValue = true;
