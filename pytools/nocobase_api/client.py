@@ -71,12 +71,8 @@ class NocoBaseClient:
 
     def create_field(self, collection_name: str, field: dict) -> dict:
         """在指定集合中创建字段"""
-        values = {
-            "collectionName": collection_name,
-            "name": field.get("name"),
-            "type": field.get("type"),
-            "interface": field.get("interface"),
-        }
+        values = field.copy()
+        values["collectionName"] = collection_name
         return self._request("POST", "fields", data=values)
 
     def create_record(self, collection: str, values: dict) -> dict:
