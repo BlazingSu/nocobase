@@ -75,7 +75,14 @@ class NocoBaseClient:
         values = field.copy()
         # 接口要求将集合名称包含在路径中
         path = f"collections/{collection_name}/fields:create"
-        return self._request("POST", path, data=values)
+        resp = self._request("POST", path, data=values)
+        logging.debug("Field created response: %s", resp)
+        return resp
+
+    def list_fields(self, collection_name: str) -> dict:
+        """列出指定集合的字段"""
+        path = f"collections/{collection_name}/fields:list"
+        return self._request("GET", path)
 
     def create_record(self, collection: str, values: dict) -> dict:
         """在指定集合中创建记录"""

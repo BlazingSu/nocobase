@@ -39,6 +39,8 @@ python -m nocobase_api --base-url http://localhost:13000/api \
 JSON 根节点既可以是集合数组，也可以包含 `tables` 或 `collections`
 字段，脚本都会自动识别。
 在执行命令时附加 `--debug` 参数即可看到完整的请求与响应，便于调试。
+开启调试后，每创建一个字段都会立即请求并输出该集合当前的字段列表，
+可快速验证字段是否真正保存成功。
 
 根据需要选择参数：只创建集合时可提供 `--sql` 或 `--json`；仅导入数据时需要同时指定 `--csv` 与 `--collection`。
 
