@@ -67,13 +67,15 @@ class NocoBaseClient:
     def create_collection(self, name: str, template: str = "general") -> dict:
         """创建集合（数据表）"""
         payload = {"name": name, "template": template}
-        return self._request("POST", "collections", data=payload)
+        # 新版接口使用 collections:create 路径
+        return self._request("POST", "collections:create", data=payload)
 
     def create_field(self, collection_name: str, field: dict) -> dict:
         """在指定集合中创建字段"""
         values = field.copy()
-        values["collectionName"] = collection_name
-        return self._request("POST", "fields", data=values)
+        # 接口要求将集合名称包含在路径中
+        path = f"collections/{collection_name}/fields:create"
+        return self._request("POST", path, data=values)
 
     def create_record(self, collection: str, values: dict) -> dict:
         """在指定集合中创建记录"""

@@ -2,6 +2,8 @@
 
 该目录提供了一套使用 Python 调用 NocoBase REST API 的简单脚本，
 可以根据 SQL 或 JSON 文件创建集合，并将 CSV 数据导入到指定集合中。
+创建集合和字段时使用的是最新的接口路径，如 `collections:create`
+和 `collections/<collection>/fields:create`。
 
 ## 使用方法
 
