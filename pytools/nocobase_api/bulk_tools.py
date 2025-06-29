@@ -40,9 +40,15 @@ def create_tables_from_json(client: NocoBaseClient, json_path: str):
     logging.debug("Parsing JSON file %s", json_path)
     tables = parse_json_file(json_path)
     logging.debug("Tables to create: %s", tables)
+
     for table in tables:
-        logging.info("Creating collection %s", table.get("name"))
-        client.create_collection(table.get("name"))
+        collection_name = table.get("name")
+        logging.info("Creating collection %s", collection_name)
+        resp = client.create_collection(collection_name)
+        logging.debug("Collection response: %s", resp)
+
         for field in table.get("fields", []):
-            logging.info("Creating field %s.%s", table.get("name"), field.get("name"))
-            client.create_field(table.get("name"), field)
+            field_name = field.get("name")
+            logging.info("Creating field %s.%s", collection_name, field_name)
+            field_resp = client.create_field(collection_name, field)
+            logging.debug("Field response: %s", field_resp)

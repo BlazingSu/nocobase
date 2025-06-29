@@ -34,8 +34,11 @@ python -m nocobase_api --base-url http://localhost:13000/api \
 - `--collection`：CSV 数据要导入的集合名称。
 - `--debug`：输出调试信息，便于排查脚本执行过程中的问题。
 
-在 JSON 文件中可以为字段设置诸如 `title`、`required`、`unique` 以及
+在 JSON 文件中可以为字段设置诸如 `title`、`required`、`unique`、
 `primaryKey` 等属性，脚本会原样传递这些配置以创建相应字段。
+JSON 根节点既可以是集合数组，也可以包含 `tables` 或 `collections`
+字段，脚本都会自动识别。
+在执行命令时附加 `--debug` 参数即可看到完整的请求与响应，便于调试。
 
 根据需要选择参数：只创建集合时可提供 `--sql` 或 `--json`；仅导入数据时需要同时指定 `--csv` 与 `--collection`。
 
