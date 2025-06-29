@@ -1,7 +1,7 @@
 import argparse
 import logging
 from .client import NocoBaseClient
-from .bulk_tools import create_tables_from_sql, import_csv
+from .bulk_tools import create_tables_from_sql, import_csv, create_tables_from_json
 
 """NocoBase 命令行工具
 
@@ -22,6 +22,7 @@ def main():
         help="登录方式标识，例如 basic/goout",
     )
     # 选项：指定 SQL 文件创建数据表
+    parser.add_argument("--json", help="包含集合定义的 JSON 文件")
     parser.add_argument("--sql", help="包含建表语句的 SQL 文件")
     # 选项：导入 CSV 数据及对应集合名称
     parser.add_argument("--csv", help="要导入的 CSV 文件")
@@ -49,6 +50,10 @@ def main():
     # 登录以获取 token
     client.sign_in()
     logging.info("Signed in successfully")
+
+    if args.json:
+        logging.info("Creating collections from %s", args.json)
+        create_tables_from_json(client, args.json)
 
     if args.sql:
         # 根据 SQL 文件创建数据表
