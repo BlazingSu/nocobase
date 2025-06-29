@@ -2,6 +2,7 @@ import csv
 import logging
 from .client import NocoBaseClient
 from .sql_utils import parse_sql_file
+from .json_utils import parse_json_file
 
 """批量操作工具函数
 
@@ -32,3 +33,16 @@ def import_csv(client: NocoBaseClient, collection: str, csv_path: str):
             logging.debug("Creating record: %s", row)
             client.create_record(collection, row)
 
+
+
+def create_tables_from_json(client: NocoBaseClient, json_path: str):
+    """根据 JSON 文件创建集合和字段"""
+    logging.debug("Parsing JSON file %s", json_path)
+    tables = parse_json_file(json_path)
+    logging.debug("Tables to create: %s", tables)
+    for table in tables:
+        logging.info("Creating collection %s", table.get("name"))
+        client.create_collection(table.get("name"))
+        for field in table.get("fields", []):
+            logging.info("Creating field %s.%s", table.get("name"), field.get("name"))
+            client.create_field(table.get("name"), field)
