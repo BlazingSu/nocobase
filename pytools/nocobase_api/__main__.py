@@ -32,6 +32,12 @@ def main():
         action="store_true",
         help="输出调试信息",
     )
+    parser.add_argument(
+        "--refresh",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="执行完操作后刷新数据源，默认启用 (可用 --no-refresh 禁用)",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -64,6 +70,10 @@ def main():
         # 将 CSV 文件中的记录导入指定集合
         logging.info("Importing %s into %s", args.csv, args.collection)
         import_csv(client, args.collection, args.csv)
+
+    if args.refresh:
+        logging.info("Refreshing data source")
+        client.refresh_data_source()
 
 
 if __name__ == "__main__":

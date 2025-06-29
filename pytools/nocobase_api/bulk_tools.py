@@ -24,6 +24,8 @@ def create_tables_from_sql(client: NocoBaseClient, sql_path: str):
             fields_after = client.list_fields(table["name"])
             logging.debug("Fields of %s after creation: %s", table["name"], fields_after)
 
+    client.refresh_data_source("main")
+
 
 def import_csv(client: NocoBaseClient, collection: str, csv_path: str):
     """将 CSV 数据导入指定集合"""
@@ -57,3 +59,5 @@ def create_tables_from_json(client: NocoBaseClient, json_path: str):
             # 创建后立即列出字段，便于确认是否成功保存
             fields_after = client.list_fields(collection_name)
             logging.debug("Fields of %s after creation: %s", collection_name, fields_after)
+
+    client.refresh_data_source("main")
