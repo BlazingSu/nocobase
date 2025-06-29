@@ -89,3 +89,9 @@ class NocoBaseClient:
         path = f"{collection}:create"
         return self._request("POST", path, data={"values": values})
 
+    def refresh_data_source(self, key: str = "main") -> dict:
+        """刷新指定数据源，使最新结构在界面中可见"""
+        quoted = urllib.parse.quote(key, safe="")
+        path = f"dataSources:refresh?filterByTk={quoted}"
+        return self._request("POST", path)
+
