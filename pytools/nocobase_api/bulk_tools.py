@@ -20,7 +20,7 @@ def create_tables_from_sql(
         # table 为解析后的结构，包括集合名称和字段列表
         logging.info("Creating collection %s", table["name"])
         client.create_collection(table["name"], data_source_key=data_source_key)
-        client.set_fields(table["name"], table["fields"])
+        client.set_collection_fields(table["name"], table["fields"])
         fields_after = client.list_fields(
             table["name"], data_source_key=data_source_key
         )
@@ -57,7 +57,7 @@ def create_tables_from_json(
         )
         logging.debug("Collection response: %s", resp)
         if table.get("fields"):
-            client.set_fields(collection_name, table["fields"])
+            client.set_collection_fields(collection_name, table["fields"])
             fields_after = client.list_fields(
                 collection_name, data_source_key=data_source_key
             )
