@@ -59,6 +59,15 @@ export default {
       if (values.possibleTypes) {
         delete values.possibleTypes;
       }
+      const collectionRecord = await mainDb.getRepository('dataSourcesCollections').findOne({
+        filter: {
+          name: collectionName,
+          dataSourceKey,
+        },
+      });
+
+      const collectionKey = collectionRecord?.get('key');
+
       if (!fieldRecord) {
         fieldRecord = await mainDb.getRepository('dataSourcesFields').create({
           values: {
@@ -66,6 +75,7 @@ export default {
             name,
             collectionName: collectionName,
             dataSourceKey,
+            collectionKey,
           },
         });
       } else {
@@ -76,7 +86,10 @@ export default {
               collectionName,
               dataSourceKey,
             },
-            values,
+            values: {
+              ...values,
+              collectionKey,
+            },
           })
         )[0];
       }
@@ -114,11 +127,19 @@ export default {
       if (values.possibleTypes) {
         delete values.possibleTypes;
       }
+      const collectionRecord = await mainDb.getRepository('dataSourcesCollections').findOne({
+        filter: {
+          name: collectionName,
+          dataSourceKey,
+        },
+      });
+
       const fieldRecord = await mainDb.getRepository('dataSourcesFields').create({
         values: {
           ...values,
           collectionName,
           dataSourceKey,
+          collectionKey: collectionRecord?.get('key'),
         },
       });
 
