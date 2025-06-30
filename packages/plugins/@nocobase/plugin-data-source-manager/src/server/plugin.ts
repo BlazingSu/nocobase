@@ -373,7 +373,7 @@ export class PluginDataSourceManagerServer extends Plugin {
           if (actionName === 'add') {
             const klass = dataSourceManager.factory.getClass(values.options.type);
             // @ts-ignore
-            const dataSource = new klass(dbOptions);
+            const dataSource = new klass(values.options);
             introspector = dataSource.collectionManager.dataSource.createDatabaseIntrospector(
               dataSource.collectionManager.db,
             );
