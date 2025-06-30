@@ -116,6 +116,15 @@ class NocoBaseClient:
 
         return resp
 
+    def set_fields(self, collection_name: str, fields: list[dict]) -> dict:
+        """批量设置集合字段"""
+
+        payload = {
+            "filterByTk": collection_name,
+            "values": {"fields": fields},
+        }
+        return self._request("POST", "collections:setFields", data=payload)
+
     def list_fields(
         self, collection_name: str, data_source_key: str | None = None
     ) -> dict:
