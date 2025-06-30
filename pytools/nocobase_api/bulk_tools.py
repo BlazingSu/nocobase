@@ -20,15 +20,11 @@ def create_tables_from_sql(
         # table 为解析后的结构，包括集合名称和字段列表
         logging.info("Creating collection %s", table["name"])
         client.create_collection(table["name"], data_source_key=data_source_key)
-        for field in table["fields"]:
-            logging.info("Creating field %s.%s", table["name"], field["name"])
-            client.create_field(
-                table["name"], field, data_source_key=data_source_key
-            )
-            fields_after = client.list_fields(
-                table["name"], data_source_key=data_source_key
-            )
-            logging.debug("Fields of %s after creation: %s", table["name"], fields_after)
+        client.set_fields(table["name"], table["fields"])
+        fields_after = client.list_fields(
+            table["name"], data_source_key=data_source_key
+        )
+        logging.debug("Fields of %s after creation: %s", table["name"], fields_after)
 
     client.refresh_data_source(data_source_key)
 
@@ -60,15 +56,8 @@ def create_tables_from_json(
             collection_name, data_source_key=data_source_key
         )
         logging.debug("Collection response: %s", resp)
-
-        for field in table.get("fields", []):
-            field_name = field.get("name")
-            logging.info("Creating field %s.%s", collection_name, field_name)
-            field_resp = client.create_field(
-                collection_name, field, data_source_key=data_source_key
-            )
-            logging.debug("Field response: %s", field_resp)
-            # 创建后立即列出字段，便于确认是否成功保存
+        if table.get("fields"):
+            client.set_fields(collection_name, table["fields"])
             fields_after = client.list_fields(
                 collection_name, data_source_key=data_source_key
             )
