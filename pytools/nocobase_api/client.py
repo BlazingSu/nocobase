@@ -67,22 +67,25 @@ class NocoBaseClient:
     def create_collection(
         self, name: str, template: str = "general", data_source_key: str | None = None
     ) -> dict:
-        """创建集合（数据表）
-
-        当 ``data_source_key`` 指定时，会同时在该数据源下记录集合信息，
-        相当于后台界面的“数据源管理”中新增数据表。未指定时仅在主数据源创建。
-        """
+        """创建集合（数据表）并在数据源中记录"""
 
         payload = {"name": name, "template": template}
 
+        # 先在集合层面创建数据表
+        resp = self._request("POST", "collections:create", data=payload)
+
+        # 如指定了数据源，则同步写入 dataSourcesCollections
         if data_source_key:
             quoted_name = urllib.parse.quote(name, safe="")
             quoted_ds = urllib.parse.quote(data_source_key, safe="")
             path = f"dataSources/{quoted_ds}/collections:update?filterByTk={quoted_name}"
-            return self._request("POST", path, data=payload)
+            try:
+                self._request("POST", path, data=payload)
+            except urllib.error.HTTPError:
+                # 如果数据源中已存在该记录，忽略错误
+                logging.debug("Collection %s already linked to data source %s", name, data_source_key)
 
-        # 默认仍使用 collections:create 路径
-        return self._request("POST", "collections:create", data=payload)
+        return resp
 
     def create_field(
         self,
@@ -90,25 +93,27 @@ class NocoBaseClient:
         field: dict,
         data_source_key: str | None = None,
     ) -> dict:
-        """在指定集合中创建字段
-
-        如果提供 ``data_source_key``，则通过 ``dataSourcesCollections`` 路径
-        创建字段，以便在数据源管理界面中能够看到该字段。
-        """
+        """在指定集合中创建字段并写入数据源"""
 
         values = field.copy()
 
+        # 先在集合层面创建字段，确保数据库结构存在
+        path = f"collections/{collection_name}/fields:create"
+        resp = self._request("POST", path, data=values)
+        logging.debug("Field created response: %s", resp)
+
+        # 如指定数据源，则额外写入 dataSourcesFields
         if data_source_key:
             quoted_ds = urllib.parse.quote(data_source_key, safe="")
             quoted_collection = urllib.parse.quote(collection_name, safe="")
-            path = (
-                f"dataSourcesCollections/{quoted_ds}.{quoted_collection}/fields:create"
-            )
-        else:
-            path = f"collections/{collection_name}/fields:create"
+            ds_path = f"dataSourcesCollections/{quoted_ds}.{quoted_collection}/fields:create"
+            try:
+                self._request("POST", ds_path, data=values)
+            except urllib.error.HTTPError:
+                logging.debug(
+                    "Field %s already linked to data source %s", field.get("name"), data_source_key
+                )
 
-        resp = self._request("POST", path, data=values)
-        logging.debug("Field created response: %s", resp)
         return resp
 
     def list_fields(
