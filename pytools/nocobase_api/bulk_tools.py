@@ -60,23 +60,25 @@ def create_tables_from_json(
     for table in tables:
         collection_name = table.get("name")
         logging.info("Creating collection %s", collection_name)
-        options = {k: v for k, v in table.items() if k not in {"name", "fields"}}
+        options = {k: v for k, v in table.items() if k != "name"}
         resp = client.create_collection(
             collection_name,
             data_source_key=data_source_key,
             **options,
         )
         logging.debug("Collection response: %s", resp)
-        if table.get("fields"):
-            for field in table["fields"]:
-                client.create_field(
-                    collection_name, field, data_source_key=data_source_key
-                )
-            fields_after = client.list_fields(
-                collection_name, data_source_key=data_source_key
-            )
-            logging.debug(
-                "Fields of %s after creation: %s", collection_name, fields_after
-            )
+        if not table.get("fields"):
+            continue
+
+        # When fields are provided in the create request, NocoBase can
+        # automatically append preset fields such as `id`, `createdBy`,
+        # `updatedBy`, `createdAt` and `updatedAt` based on the collection
+        # options. Therefore we no longer create each field separately.
+        fields_after = client.list_fields(
+            collection_name, data_source_key=data_source_key
+        )
+        logging.debug(
+            "Fields of %s after creation: %s", collection_name, fields_after
+        )
 
     client.refresh_data_source(data_source_key)
