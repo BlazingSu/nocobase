@@ -127,6 +127,192 @@ class NocoBaseClient:
 
         return self._request("GET", path)
 
+    # ------------------------------------------------------------------
+    # Collection APIs
+
+    def list_collections(self, params: dict | None = None) -> dict:
+        """列出所有集合"""
+        path = "collections:list"
+        if params:
+            path += "?" + urllib.parse.urlencode(params)
+        return self._request("GET", path)
+
+    def get_collection(self, name: str) -> dict:
+        """获取单个集合信息"""
+        quoted = urllib.parse.quote(name, safe="")
+        path = f"collections:get?filterByTk={quoted}"
+        return self._request("GET", path)
+
+    def update_collection(self, name: str, values: dict) -> dict:
+        """更新集合"""
+        quoted = urllib.parse.quote(name, safe="")
+        path = f"collections:update?filterByTk={quoted}"
+        return self._request("POST", path, data=values)
+
+    def destroy_collection(self, name: str) -> dict:
+        """删除集合"""
+        quoted = urllib.parse.quote(name, safe="")
+        path = f"collections:destroy?filterByTk={quoted}"
+        return self._request("POST", path)
+
+    def move_collection(self, values: dict) -> dict:
+        """移动集合的顺序"""
+        return self._request("POST", "collections:move", data=values)
+
+    def set_collection_fields(self, name: str, fields: list) -> dict:
+        """批量设置集合字段"""
+        quoted = urllib.parse.quote(name, safe="")
+        path = f"collections:setFields?filterByTk={quoted}"
+        return self._request("POST", path, data={"fields": fields})
+
+    # ------------------------------------------------------------------
+    # Collection field APIs
+
+    def get_field(self, collection_name: str, name: str) -> dict:
+        """获取指定字段信息"""
+        quoted = urllib.parse.quote(name, safe="")
+        path = f"collections/{collection_name}/fields:get?filterByTk={quoted}"
+        return self._request("GET", path)
+
+    def update_field(self, collection_name: str, name: str, values: dict) -> dict:
+        """更新字段"""
+        quoted = urllib.parse.quote(name, safe="")
+        path = (
+            f"collections/{collection_name}/fields:update?filterByTk={quoted}"
+        )
+        return self._request("POST", path, data=values)
+
+    def destroy_field(self, collection_name: str, name: str) -> dict:
+        """删除字段"""
+        quoted = urllib.parse.quote(name, safe="")
+        path = (
+            f"collections/{collection_name}/fields:destroy?filterByTk={quoted}"
+        )
+        return self._request("POST", path)
+
+    def move_field(self, collection_name: str, values: dict) -> dict:
+        """移动字段顺序"""
+        path = f"collections/{collection_name}/fields:move"
+        return self._request("POST", path, data=values)
+
+    # ------------------------------------------------------------------
+    # Collection category APIs
+
+    def list_collection_categories(self, params: dict | None = None) -> dict:
+        """列出集合分类"""
+        path = "collectionCategories:list"
+        if params:
+            path += "?" + urllib.parse.urlencode(params)
+        return self._request("POST", path)
+
+    def get_collection_category(self, key: str) -> dict:
+        """获取集合分类"""
+        quoted = urllib.parse.quote(key, safe="")
+        path = f"collectionCategories:get?filterByTk={quoted}"
+        return self._request("POST", path)
+
+    def create_collection_category(self, values: dict) -> dict:
+        """创建集合分类"""
+        return self._request("POST", "collectionCategories:create", data=values)
+
+    def update_collection_category(self, key: str, values: dict) -> dict:
+        """更新集合分类"""
+        quoted = urllib.parse.quote(key, safe="")
+        path = f"collectionCategories:update?filterByTk={quoted}"
+        return self._request("POST", path, data=values)
+
+    def destroy_collection_category(self, key: str) -> dict:
+        """删除集合分类"""
+        quoted = urllib.parse.quote(key, safe="")
+        path = f"collectionCategories:destroy?filterByTk={quoted}"
+        return self._request("POST", path)
+
+    def move_collection_category(self, values: dict) -> dict:
+        """移动集合分类"""
+        return self._request("POST", "collectionCategories:move", data=values)
+
+    # ------------------------------------------------------------------
+    # Database view APIs
+
+    def get_db_view(self, name: str, schema: str | None = None) -> dict:
+        """获取数据库视图字段"""
+        params = {"filterByTk": name}
+        if schema:
+            params["schema"] = schema
+        path = "dbViews:get?" + urllib.parse.urlencode(params)
+        return self._request("GET", path)
+
+    def list_db_views(self) -> dict:
+        """列出未连接集合的数据库视图"""
+        return self._request("GET", "dbViews:list")
+
+    def query_db_view(
+        self,
+        name: str,
+        schema: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
+    ) -> dict:
+        """查询数据库视图数据"""
+        params: dict[str, str | int] = {"filterByTk": name}
+        if schema:
+            params["schema"] = schema
+        if page is not None:
+            params["page"] = page
+        if page_size is not None:
+            params["pageSize"] = page_size
+        path = "dbViews:query?" + urllib.parse.urlencode(params)
+        return self._request("GET", path)
+
+    # ------------------------------------------------------------------
+    # Generic collection record APIs
+
+    def list_records(self, collection: str, params: dict | None = None) -> dict:
+        """列出集合记录"""
+        path = f"{collection}:list"
+        if params:
+            path += "?" + urllib.parse.urlencode(params)
+        return self._request("GET", path)
+
+    def get_record(self, collection: str, key: str) -> dict:
+        """获取单条记录"""
+        quoted = urllib.parse.quote(key, safe="")
+        path = f"{collection}:get?filterByTk={quoted}"
+        return self._request("GET", path)
+
+    def update_record(self, collection: str, key: str, values: dict) -> dict:
+        """更新记录"""
+        quoted = urllib.parse.quote(key, safe="")
+        path = f"{collection}:update?filterByTk={quoted}"
+        return self._request("POST", path, data={"values": values})
+
+    def destroy_record(self, collection: str, key: str) -> dict:
+        """删除记录"""
+        quoted = urllib.parse.quote(key, safe="")
+        path = f"{collection}:destroy?filterByTk={quoted}"
+        return self._request("POST", path)
+
+    def move_record(self, collection: str, values: dict) -> dict:
+        """移动记录顺序"""
+        path = f"{collection}:move"
+        return self._request("POST", path, data=values)
+
+    def export_records(self, collection: str, values: dict | None = None) -> dict:
+        """导出记录"""
+        path = f"{collection}:export"
+        return self._request("POST", path, data=values or {})
+
+    def import_xlsx(self, collection: str, values: dict) -> dict:
+        """从 Excel 导入记录"""
+        path = f"{collection}:importXlsx"
+        return self._request("POST", path, data=values)
+
+    def download_xlsx_template(self, collection: str, values: dict | None = None) -> dict:
+        """下载导入模板"""
+        path = f"{collection}:downloadXlsxTemplate"
+        return self._request("POST", path, data=values or {})
+
+
     def create_record(self, collection: str, values: dict) -> dict:
         """在指定集合中创建记录"""
         path = f"{collection}:create"
