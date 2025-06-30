@@ -60,8 +60,11 @@ def create_tables_from_json(
     for table in tables:
         collection_name = table.get("name")
         logging.info("Creating collection %s", collection_name)
+        options = {k: v for k, v in table.items() if k not in {"name", "fields"}}
         resp = client.create_collection(
-            collection_name, data_source_key=data_source_key
+            collection_name,
+            data_source_key=data_source_key,
+            **options,
         )
         logging.debug("Collection response: %s", resp)
         if table.get("fields"):

@@ -38,8 +38,10 @@ python -m nocobase_api --base-url http://localhost:13000/api \
 - `--refresh`：创建或导入完成后刷新数据源，使界面立刻反映最新结构，
   默认启用，可使用 `--no-refresh` 关闭。
 
-在 JSON 文件中可以为字段设置诸如 `title`、`required`、`unique`、
-`primaryKey` 等属性，脚本会原样传递这些配置以创建相应字段。
+在 JSON 文件中可以为字段设置诸如 `uiSchema.title`、`required`、`unique`、
+`primaryKey` 等属性，脚本会原样传递这些配置以创建相应字段。字段名称
+（即在界面中显示的标题）需写入 `uiSchema.title` 字段，否则不会在配置界面
+显示。
 JSON 根节点既可以是集合数组，也可以包含 `tables` 或 `collections`
 字段，脚本都会自动识别。
 在执行命令时附加 `--debug` 参数即可看到完整的请求与响应，便于调试。
@@ -53,4 +55,42 @@ JSON 根节点既可以是集合数组，也可以包含 `tables` 或 `collectio
 完成数据表及字段的创建后，需要调用 `dataSources:refresh` 接口刷新数据源，
 否则在 NocoBase UI 中可能无法立即看到新的集合或字段。命令行工具默认
 会在操作结束后自动执行该步骤。
+
+## JSON 文件格式示例
+
+以下示例展示了一个较完整的集合定义，可在运行腳本时通过 `--json` 引入：
+
+```json
+{
+  "collections": [
+    {
+      "name": "posts",
+      "title": "文章",
+      "template": "general",
+      "displayTemplate": "{{title}}",
+      "fields": [
+        {
+          "name": "title",
+          "type": "string",
+          "interface": "input",
+          "uiSchema": { "title": "标题" },
+          "description": "文章标题",
+          "required": true,
+          "isTitle": true
+        },
+        {
+          "name": "content",
+          "type": "text",
+          "interface": "textarea",
+          "uiSchema": { "title": "内容" },
+          "description": "正文"
+        }
+      ],
+      "enableWorkflow": true
+    }
+  ]
+}
+```
+
+集合级对象中除 `name` 与 `fields` 之外的键（如 `title`、`template`、`displayTemplate` 等）都会在执行时原样转发至 `collections:create` 接口，因此可以通过 JSON 文件配置分类、模板或权限等高级选项。
 

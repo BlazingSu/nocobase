@@ -65,11 +65,15 @@ class NocoBaseClient:
         self.token = token
 
     def create_collection(
-        self, name: str, template: str = "general", data_source_key: str | None = None
+        self,
+        name: str,
+        template: str = "general",
+        data_source_key: str | None = None,
+        **options,
     ) -> dict:
         """创建集合（数据表）并在数据源中记录"""
 
-        payload = {"name": name, "template": template}
+        payload = {"name": name, "template": template, **options}
 
         # 先在集合层面创建数据表
         resp = self._request("POST", "collections:create", data=payload)
