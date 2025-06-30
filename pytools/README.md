@@ -2,8 +2,10 @@
 
 该目录提供了一套使用 Python 调用 NocoBase REST API 的简单脚本，
 可以根据 SQL 或 JSON 文件创建集合，并将 CSV 数据导入到指定集合中。
-创建集合和字段时使用的是最新的接口路径，如 `collections:create`
-和 `collections/<collection>/fields:create`。
+创建集合时使用 `collections:create`，字段默认通过
+`collections/<collection>/fields:create` 创建。如指定 `--data-source`
+参数，则字段会改为调用 `dataSourcesCollections/<dataSource>.<collection>/fields:create`
+以确保在数据源管理界面同步显示。
 
 ## 使用方法
 
@@ -32,6 +34,7 @@ python -m nocobase_api --base-url http://localhost:13000/api \
 - `--json`：包含集合定义的 JSON 文件，可批量创建集合及字段。
 - `--csv`：要导入的 CSV 文件。
 - `--collection`：CSV 数据要导入的集合名称。
+- `--data-source`：指定数据源 key（例如 `main`），创建字段时将写入该数据源。
 - `--debug`：输出调试信息，便于排查脚本执行过程中的问题。
 - `--refresh`：创建或导入完成后刷新数据源，使界面立刻反映最新结构，
   默认启用，可使用 `--no-refresh` 关闭。

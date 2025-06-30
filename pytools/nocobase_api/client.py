@@ -64,24 +64,67 @@ class NocoBaseClient:
             raise RuntimeError("Failed to obtain token")
         self.token = token
 
-    def create_collection(self, name: str, template: str = "general") -> dict:
-        """创建集合（数据表）"""
+    def create_collection(
+        self, name: str, template: str = "general", data_source_key: str | None = None
+    ) -> dict:
+        """创建集合（数据表）
+
+        当 ``data_source_key`` 指定时，会同时在该数据源下记录集合信息，
+        相当于后台界面的“数据源管理”中新增数据表。未指定时仅在主数据源创建。
+        """
+
         payload = {"name": name, "template": template}
-        # 新版接口使用 collections:create 路径
+
+        if data_source_key:
+            quoted_name = urllib.parse.quote(name, safe="")
+            quoted_ds = urllib.parse.quote(data_source_key, safe="")
+            path = f"dataSources/{quoted_ds}/collections:update?filterByTk={quoted_name}"
+            return self._request("POST", path, data=payload)
+
+        # 默认仍使用 collections:create 路径
         return self._request("POST", "collections:create", data=payload)
 
-    def create_field(self, collection_name: str, field: dict) -> dict:
-        """在指定集合中创建字段"""
+    def create_field(
+        self,
+        collection_name: str,
+        field: dict,
+        data_source_key: str | None = None,
+    ) -> dict:
+        """在指定集合中创建字段
+
+        如果提供 ``data_source_key``，则通过 ``dataSourcesCollections`` 路径
+        创建字段，以便在数据源管理界面中能够看到该字段。
+        """
+
         values = field.copy()
-        # 接口要求将集合名称包含在路径中
-        path = f"collections/{collection_name}/fields:create"
+
+        if data_source_key:
+            quoted_ds = urllib.parse.quote(data_source_key, safe="")
+            quoted_collection = urllib.parse.quote(collection_name, safe="")
+            path = (
+                f"dataSourcesCollections/{quoted_ds}.{quoted_collection}/fields:create"
+            )
+        else:
+            path = f"collections/{collection_name}/fields:create"
+
         resp = self._request("POST", path, data=values)
         logging.debug("Field created response: %s", resp)
         return resp
 
-    def list_fields(self, collection_name: str) -> dict:
+    def list_fields(
+        self, collection_name: str, data_source_key: str | None = None
+    ) -> dict:
         """列出指定集合的字段"""
-        path = f"collections/{collection_name}/fields:list"
+
+        if data_source_key:
+            quoted_ds = urllib.parse.quote(data_source_key, safe="")
+            quoted_collection = urllib.parse.quote(collection_name, safe="")
+            path = (
+                f"dataSourcesCollections/{quoted_ds}.{quoted_collection}/fields:list"
+            )
+        else:
+            path = f"collections/{collection_name}/fields:list"
+
         return self._request("GET", path)
 
     def create_record(self, collection: str, values: dict) -> dict:

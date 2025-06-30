@@ -28,6 +28,11 @@ def main():
     parser.add_argument("--csv", help="要导入的 CSV 文件")
     parser.add_argument("--collection", help="CSV 数据对应的集合名称")
     parser.add_argument(
+        "--data-source",
+        default="main",
+        help="数据源 key，默认为 main，与后台数据源管理中的 key 保持一致",
+    )
+    parser.add_argument(
         "--debug",
         action="store_true",
         help="输出调试信息",
@@ -59,12 +64,12 @@ def main():
 
     if args.json:
         logging.info("Creating collections from %s", args.json)
-        create_tables_from_json(client, args.json)
+        create_tables_from_json(client, args.json, data_source_key=args.data_source)
 
     if args.sql:
         # 根据 SQL 文件创建数据表
         logging.info("Creating collections from %s", args.sql)
-        create_tables_from_sql(client, args.sql)
+        create_tables_from_sql(client, args.sql, data_source_key=args.data_source)
 
     if args.csv and args.collection:
         # 将 CSV 文件中的记录导入指定集合
@@ -73,7 +78,7 @@ def main():
 
     if args.refresh:
         logging.info("Refreshing data source")
-        client.refresh_data_source()
+        client.refresh_data_source(args.data_source)
 
 
 if __name__ == "__main__":

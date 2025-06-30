@@ -9,7 +9,9 @@ from .json_utils import parse_json_file
 包含从 SQL 创建数据表和从 CSV 导入数据的实现。"""
 
 
-def create_tables_from_sql(client: NocoBaseClient, sql_path: str):
+def create_tables_from_sql(
+    client: NocoBaseClient, sql_path: str, data_source_key: str = "main"
+):
     """根据 SQL 文件创建集合和字段"""
     logging.debug("Parsing SQL file %s", sql_path)
     tables = parse_sql_file(sql_path)
@@ -17,14 +19,18 @@ def create_tables_from_sql(client: NocoBaseClient, sql_path: str):
     for table in tables:
         # table 为解析后的结构，包括集合名称和字段列表
         logging.info("Creating collection %s", table["name"])
-        client.create_collection(table["name"])
+        client.create_collection(table["name"], data_source_key=data_source_key)
         for field in table["fields"]:
             logging.info("Creating field %s.%s", table["name"], field["name"])
-            client.create_field(table["name"], field)
-            fields_after = client.list_fields(table["name"])
+            client.create_field(
+                table["name"], field, data_source_key=data_source_key
+            )
+            fields_after = client.list_fields(
+                table["name"], data_source_key=data_source_key
+            )
             logging.debug("Fields of %s after creation: %s", table["name"], fields_after)
 
-    client.refresh_data_source("main")
+    client.refresh_data_source(data_source_key)
 
 
 def import_csv(client: NocoBaseClient, collection: str, csv_path: str):
@@ -39,7 +45,9 @@ def import_csv(client: NocoBaseClient, collection: str, csv_path: str):
 
 
 
-def create_tables_from_json(client: NocoBaseClient, json_path: str):
+def create_tables_from_json(
+    client: NocoBaseClient, json_path: str, data_source_key: str = "main"
+):
     """根据 JSON 文件创建集合和字段"""
     logging.debug("Parsing JSON file %s", json_path)
     tables = parse_json_file(json_path)
@@ -48,16 +56,22 @@ def create_tables_from_json(client: NocoBaseClient, json_path: str):
     for table in tables:
         collection_name = table.get("name")
         logging.info("Creating collection %s", collection_name)
-        resp = client.create_collection(collection_name)
+        resp = client.create_collection(
+            collection_name, data_source_key=data_source_key
+        )
         logging.debug("Collection response: %s", resp)
 
         for field in table.get("fields", []):
             field_name = field.get("name")
             logging.info("Creating field %s.%s", collection_name, field_name)
-            field_resp = client.create_field(collection_name, field)
+            field_resp = client.create_field(
+                collection_name, field, data_source_key=data_source_key
+            )
             logging.debug("Field response: %s", field_resp)
             # 创建后立即列出字段，便于确认是否成功保存
-            fields_after = client.list_fields(collection_name)
+            fields_after = client.list_fields(
+                collection_name, data_source_key=data_source_key
+            )
             logging.debug("Fields of %s after creation: %s", collection_name, fields_after)
 
-    client.refresh_data_source("main")
+    client.refresh_data_source(data_source_key)
