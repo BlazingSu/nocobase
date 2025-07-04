@@ -31,7 +31,8 @@
   - [最简单的测试用例](./app/__tests__/app.test.ts)
 - 客户端 SDK（APIClient）示例
   - [客户端常规请求 —— api.request()](./api-client/api.request.ts)
-  - [客户端资源请求 —— api.resource().action()](./api-client/api.resource.ts)
+- [客户端资源请求 —— api.resource().action()](./api-client/api.resource.ts)
+  - [Python 示例：更新字段类型](./python/update_product_id_field.py)
 
 ## Database
 
