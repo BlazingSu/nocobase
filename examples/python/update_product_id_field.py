@@ -1,23 +1,42 @@
 import requests
-from pytools import memoize
 
 API_URL = 'http://localhost:13000/api'
-COLLECTION = 'product'
+USERNAME = 'admin@nocobase.com'
+PASSWORD = 'Qaz19981108@'
+AUTHENTICATOR = 'goout'
+COLLECTION = 'products'
 FIELD = 'id'
 
-@memoize()
-def update_field_type():
-    url = f"{API_URL}/collections/{COLLECTION}/fields:update"
-    params = {'filterByTk': FIELD}
-    data = {
-        'values': {
-            'type': 'integer'
-        }
+
+def sign_in():
+    url = f"{API_URL}/auth:signIn"
+    headers = {
+        'Content-Type': 'application/json',
+        'X-Authenticator': AUTHENTICATOR,
     }
-    response = requests.post(url, params=params, json=data)
-    response.raise_for_status()
-    return response.json()
+    data = {
+        'email': USERNAME,
+        'password': PASSWORD,
+    }
+    resp = requests.post(url, headers=headers, json=data)
+    resp.raise_for_status()
+    return resp.json()['data']['token']
+
+
+def update_field_type(token: str):
+    url = f"{API_URL}/collections/{COLLECTION}/fields/{FIELD}"
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+        'X-Authenticator': AUTHENTICATOR,
+    }
+    data = {'type': 'integer'}
+    resp = requests.patch(url, json=data, headers=headers)
+    resp.raise_for_status()
+    return resp.json()
+
 
 if __name__ == '__main__':
-    result = update_field_type()
+    token = sign_in()
+    result = update_field_type(token)
     print('Update result:', result)
