@@ -26,6 +26,10 @@ def test_list_fields():
     with mock.patch.object(requests, "get", return_value=fake_resp) as get:
         result = api.list_fields("posts")
 
-    get.assert_called_once()
+    get.assert_called_once_with(
+        "http://api/collections/posts/fields:list",
+        headers=api._headers(),
+        params={"paginate": "false"},
+    )
     assert result == ["f1", "f2"]
 
