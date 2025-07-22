@@ -29,7 +29,11 @@ class NocoAPI:
         """Return all fields for a given collection."""
         url = f"{self.api_url}/collections/{collection_name}/fields:list"
         try:
-            response = requests.get(url, headers=self._headers())
+            response = requests.get(
+                url,
+                headers=self._headers(),
+                params={"paginate": "false"},
+            )
             response.raise_for_status()
             return response.json().get("data", [])
         except requests.RequestException as exc:
