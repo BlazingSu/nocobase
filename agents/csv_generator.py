@@ -30,8 +30,14 @@ def generate_csv(csv_file_path: str, field_names: List[str], records: Iterable[D
             writer.writerow(row)
 
 
-def generate_template(csv_file_path: str, collection_name: str, api: NocoAPI) -> None:
-    """Generate an empty CSV template for a collection.
+def generate_template(
+    csv_file_path: str,
+    collection_name: str,
+    api: NocoAPI,
+    *,
+    include_data: bool = False,
+) -> None:
+    """Generate a CSV template for a collection.
 
     Parameters
     ----------
@@ -41,8 +47,13 @@ def generate_template(csv_file_path: str, collection_name: str, api: NocoAPI) ->
         Name of the collection to inspect for fields.
     api: NocoAPI
         Authenticated API client used to fetch field information.
+    include_data: bool, optional
+        If ``True`` include existing records in the generated CSV.
     """
     fields = api.list_fields(collection_name)
     field_names = [field["name"] for field in fields]
-    generate_csv(csv_file_path, field_names, [])
+    records: Iterable[Dict[str, Any]] = []
+    if include_data:
+        records = api.list_records(collection_name)
+    generate_csv(csv_file_path, field_names, records)
 

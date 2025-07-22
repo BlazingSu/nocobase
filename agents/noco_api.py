@@ -39,6 +39,20 @@ class NocoAPI:
         except requests.RequestException as exc:
             raise RuntimeError(f"Failed to list fields: {exc}") from exc
 
+    def list_records(self, collection_name: str) -> List[Dict[str, Any]]:
+        """Return all records for a given collection."""
+        url = f"{self.api_url}/{collection_name}:list"
+        try:
+            response = requests.get(
+                url,
+                headers=self._headers(),
+                params={"paginate": "false"},
+            )
+            response.raise_for_status()
+            return response.json().get("data", [])
+        except requests.RequestException as exc:
+            raise RuntimeError(f"Failed to list records: {exc}") from exc
+
     def create_record(self, collection_name: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a record in the specified collection.
 
