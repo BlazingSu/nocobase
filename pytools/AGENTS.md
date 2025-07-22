@@ -6,16 +6,7 @@
 ```
 ./nocobase_api/AGENTS.md
 ```
-
-为了帮助你编写适用于此Python脚本的 `AGENTS.md` 文件，我们需要定义以下内容：
-
-1. **代理的职责**：此代理将负责身份验证、获取数据结构、上传图片以及生成和管理CSV文件。
-2. **文件结构**：哪些文件和文件夹与代理的工作相关。
-3. **编码规范**：编写清晰、结构化的代码，包括命名规范和注释。
-4. **验证和测试**：如何验证更改，进行单元测试和集成测试。
-5. **与代理的沟通方式**：如何确保代理可以协同工作并提供更新。
-
-以下是针对你的需求而编写的 `AGENTS.md` 文件的一个示例：
+根据你的新增需求和提供的表格字段信息，我将重新编写一份详细的 `AGENTS.md` 文件。此文件包含代理的职责、所需操作、文件结构、编码规范、测试、验证方法及与代理的沟通方式。具体步骤如下：
 
 ---
 
@@ -27,21 +18,46 @@
 
 此代理负责以下任务：
 
-* 完成用户身份验证。
-* 获取NocoBase主数据源中各个表格的数据结构，并根据数据结构生成CSV文件。
-* 上传图片到NocoBase，并返回对应的图片URL。
-* 根据数据结构生成的CSV文件，可以手动或自动插入上传的图片URL。
+* **导出表格数据结构为CSV文件**：通过获取NocoBase中的各个表格（collections）和字段（fields），将其导出为CSV文件，便于人工填写数据。
+* **插入记录数据**：在填写好CSV记录后，上传数据，通过API解析，将记录插入到NocoBase数据库中的对应表格。
+* **上传图片并关联**：上传图片并返回其URL地址，自动插入到CSV记录中的相关字段，确保数据上传和解析时能够正常处理图片。
 
-### 工作文件
+### 数据结构与字段
 
-以下文件和文件夹与代理的工作相关：
+根据提供的数据结构，NocoBase中存在多个表格（collections）及其字段（fields），我们需要：
 
-* **`auth.py`**: 处理身份验证逻辑。
-* **`noco_api.py`**: 包含调用NocoBase API的函数。
-* **`csv_generator.py`**: 生成CSV文件并插入图片URL的功能。
-* **`image_uploader.py`**: 上传图片并返回图片URL的函数。
+* **获取所有表格**：使用NocoBase API接口获取所有表格的数据结构。
+* **获取每个表格的字段信息**：对于每个表格，获取它的字段信息，以便生成对应的CSV文件。
+* **上传数据**：生成的CSV文件需要通过API上传并解析，填充到对应的表格中。
 
-## 2. 编码规范
+### 需要使用的API
+
+* **GET /collections\:list**: 获取所有表格信息。
+* **GET /collections/{collectionName}/fields\:list**: 获取每个表格的字段信息。
+* **POST /{collectionName}\:create**: 上传数据记录到NocoBase。
+* **POST /storages\:create**: 上传图片并获取图片URL。
+
+## 2. 文件和文件夹结构
+
+以下是相关文件和文件夹的结构：
+
+```
+/project-root/
+    /agents/
+        auth.py                # 负责身份验证的逻辑
+        noco_api.py            # 与NocoBase API交互的接口
+        csv_generator.py       # 生成CSV文件并插入URL
+        image_uploader.py      # 上传图片并返回URL
+        data_uploader.py       # 将CSV数据上传到NocoBase
+    /tests/
+        test_auth.py           # 身份验证测试
+        test_noco_api.py       # 测试与NocoBase API交互的代码
+        test_csv_generator.py  # 测试CSV生成和URL插入
+        test_image_uploader.py # 测试图片上传
+        test_data_uploader.py  # 测试CSV数据上传
+```
+
+## 3. 编码规范
 
 ### 一般规则
 
@@ -68,40 +84,42 @@ except requests.exceptions.RequestException as e:
     raise  # 重新抛出异常以便上层调用捕获
 ```
 
-## 3. 文件和文件夹结构
+## 4. 处理流程
 
-以下是相关文件和文件夹的结构：
+### 任务1: 导出表格数据结构为CSV
 
-```
-/project-root/
-    /agents/
-        auth.py                # 负责身份验证的逻辑
-        noco_api.py            # 与NocoBase API交互的接口
-        csv_generator.py       # 生成CSV文件并插入URL
-        image_uploader.py      # 上传图片并返回URL
-    /tests/
-        test_auth.py           # 身份验证测试
-        test_noco_api.py       # 测试与NocoBase API交互的代码
-        test_csv_generator.py  # 测试CSV生成和URL插入
-        test_image_uploader.py # 测试图片上传
-```
+1. 获取NocoBase中所有表格（collections）的数据结构。
+2. 获取每个表格的字段信息（fields）。
+3. 将表格字段写入CSV文件（以表格字段作为CSV表头）。
 
-## 4. 验证和测试
+### 任务2: 处理上传记录
+
+1. 用户填写CSV文件中的记录数据。
+2. 使用API接口将CSV数据上传到NocoBase。
+3. API解析数据并将记录插入对应的数据库表格中。
+
+### 任务3: 上传图片并插入URL
+
+1. 上传图片文件到NocoBase。
+2. 获取返回的图片URL。
+3. 将图片URL插入到CSV数据记录中的相应字段。
+
+## 5. 验证和测试
 
 ### 验证步骤
 
-* **身份验证**：确保使用提供的用户名和密码正确地获取认证令牌。
-* **数据结构提取**：验证从NocoBase API获取的数据结构与预期一致。
-* **CSV生成**：检查生成的CSV文件，确保表头符合NocoBase数据库的字段结构。
-* **图片上传**：确保上传图片后返回的URL是有效的，并且可以在CSV文件中正确插入。
+* **CSV生成验证**：检查CSV表格的生成，确保表格的字段和数据结构正确。
+* **数据上传验证**：测试上传数据到NocoBase的过程，确保数据能够正确插入数据库。
+* **图片上传验证**：测试上传图片并返回URL，确保图片URL正确插入到CSV记录中。
 
 ### 测试
 
 * 所有功能都需要进行单元测试，包括：
 
   * **身份验证测试**：验证身份验证的有效性和错误处理。
-  * **API接口测试**：确保与NocoBase API的交互正常，能够成功获取数据结构和上传图片。
+  * **API接口测试**：确保与NocoBase API的交互正常，能够成功获取数据结构、上传图片并插入记录。
   * **CSV生成测试**：确保CSV文件按预期生成，并能正确插入图片URL。
+  * **数据上传测试**：确保从CSV上传的数据能够成功插入到NocoBase的对应表格中。
 
 可以使用 `pytest` 来编写和运行测试：
 
@@ -109,7 +127,7 @@ except requests.exceptions.RequestException as e:
 $ pytest tests/test_noco_api.py
 ```
 
-## 5. 与代理的沟通方式
+## 6. 与代理的沟通方式
 
 ### 变更管理
 
@@ -120,6 +138,7 @@ $ pytest tests/test_noco_api.py
 ### 代码审查
 
 * 所有新的功能或改动都必须经过代码审查。团队成员应评审代码，确保代码质量并减少bug。
+
 
 
 
