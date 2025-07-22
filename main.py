@@ -18,6 +18,11 @@ def main() -> None:
     tmpl.add_argument("collection", help="Collection name")
     tmpl.add_argument("output_csv", help="Path to write the template CSV")
     tmpl.add_argument("--authenticator", default="local", help="Authenticator name")
+    tmpl.add_argument(
+        "--include-data",
+        action="store_true",
+        help="Include existing records in the template",
+    )
 
     up = sub.add_parser("upload", help="Upload CSV data")
     up.add_argument("api_url", help="Base API URL")
@@ -33,7 +38,12 @@ def main() -> None:
     api = NocoAPI(args.api_url, token)
 
     if args.command == "template":
-        generate_template(args.output_csv, args.collection, api)
+        generate_template(
+            args.output_csv,
+            args.collection,
+            api,
+            include_data=args.include_data,
+        )
     elif args.command == "upload":
         upload_csv_data(args.csv_file, args.collection, api)
 
