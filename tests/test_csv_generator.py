@@ -1,5 +1,6 @@
 import csv
 import os
+from unittest import mock
 
 from agents import csv_generator
 
@@ -15,4 +16,18 @@ def test_generate_csv(tmp_path):
         rows = list(csv.DictReader(f))
 
     assert rows == [{"id": "1", "name": "A", "image": "http://img"}]
+
+
+def test_generate_template(tmp_path):
+    csv_file = tmp_path / "template.csv"
+    api = mock.Mock()
+    api.list_fields.return_value = [{"name": "id"}, {"name": "name"}]
+
+    csv_generator.generate_template(str(csv_file), "posts", api)
+
+    with open(csv_file, newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        headers = next(reader)
+
+    assert headers == ["id", "name"]
 
