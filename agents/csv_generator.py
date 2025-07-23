@@ -21,10 +21,12 @@ def generate_csv(csv_file_path: str, field_names: List[str], records: Iterable[D
         Image URL to insert into each record if `image_field` is given.
     """
     with open(csv_file_path, "w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=field_names)
+        writer = csv.DictWriter(
+            csvfile, fieldnames=field_names, extrasaction="ignore"
+        )
         writer.writeheader()
         for record in records:
-            row = dict(record)
+            row = {key: record.get(key) for key in field_names}
             if image_field and image_url:
                 row[image_field] = image_url
             writer.writerow(row)
