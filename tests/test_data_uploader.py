@@ -21,3 +21,31 @@ def test_upload_csv_data(tmp_path):
     create_record.assert_any_call("posts", {"name": "A"})
     create_record.assert_any_call("posts", {"name": "B"})
 
+
+def test_empty_strings_become_none(tmp_path):
+    csv_file = tmp_path / "data.csv"
+    with open(csv_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["name", "desc"])
+        writer.writeheader()
+        writer.writerow({"name": "A", "desc": ""})
+
+    api = NocoAPI("http://api", "token")
+    with mock.patch.object(api, "create_record") as create_record:
+        upload_csv_data(str(csv_file), "posts", api)
+
+    create_record.assert_called_once_with("posts", {"name": "A", "desc": None})
+
+
+def test_list_strings_are_parsed(tmp_path):
+    csv_file = tmp_path / "data.csv"
+    with open(csv_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["tags"])
+        writer.writeheader()
+        writer.writerow({"tags": "['服装']"})
+
+    api = NocoAPI("http://api", "token")
+    with mock.patch.object(api, "create_record") as create_record:
+        upload_csv_data(str(csv_file), "posts", api)
+
+    create_record.assert_called_once_with("posts", {"tags": ["服装"]})
+
