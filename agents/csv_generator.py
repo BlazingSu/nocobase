@@ -53,7 +53,35 @@ def generate_template(
         If ``True`` include existing records in the generated CSV.
     """
     fields = api.list_fields(collection_name)
-    field_names = [field["name"] for field in fields]
+
+    relation_interfaces = {
+        "o2o",
+        "oho",
+        "obo",
+        "o2m",
+        "m2o",
+        "m2m",
+        "linkTo",
+        "mbm",
+        "subTable",
+    }
+    relation_types = {
+        "belongsTo",
+        "hasOne",
+        "hasMany",
+        "belongsToMany",
+        "linkTo",
+    }
+
+    field_names = [
+        f["name"]
+        for f in fields
+        if f.get("interface") not in relation_interfaces
+        and f.get("type") not in relation_types
+        and f.get("interface") != "formula"
+        and f.get("type") != "formula"
+    ]
+
     records: Iterable[Dict[str, Any]] = []
     if include_data:
         records = api.list_records(collection_name)
