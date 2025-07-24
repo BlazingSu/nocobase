@@ -31,6 +31,11 @@ def main() -> None:
     up.add_argument("collection", help="Collection name")
     up.add_argument("csv_file", help="CSV file with records")
     up.add_argument("--authenticator", default="local", help="Authenticator name")
+    up.add_argument(
+        "--encoding",
+        default="utf-8",
+        help="Encoding of the CSV file (default: utf-8)",
+    )
 
     args = parser.parse_args()
 
@@ -45,7 +50,9 @@ def main() -> None:
             include_data=args.include_data,
         )
     elif args.command == "upload":
-        upload_csv_data(args.csv_file, args.collection, api)
+        upload_csv_data(
+            args.csv_file, args.collection, api, encoding=args.encoding
+        )
 
 
 if __name__ == "__main__":

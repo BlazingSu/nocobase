@@ -49,3 +49,17 @@ def test_list_strings_are_parsed(tmp_path):
 
     create_record.assert_called_once_with("posts", {"tags": ["服装"]})
 
+
+def test_custom_encoding(tmp_path):
+    csv_file = tmp_path / "data.csv"
+    with open(csv_file, "w", newline="", encoding="latin-1") as f:
+        writer = csv.DictWriter(f, fieldnames=["name"])
+        writer.writeheader()
+        writer.writerow({"name": "Æ"})
+
+    api = NocoAPI("http://api", "token")
+    with mock.patch.object(api, "create_record") as create_record:
+        upload_csv_data(str(csv_file), "posts", api, encoding="latin-1")
+
+    create_record.assert_called_once_with("posts", {"name": "Æ"})
+
