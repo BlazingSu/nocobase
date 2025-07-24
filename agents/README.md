@@ -46,6 +46,7 @@ generate_csv("output.csv", field_names, records,
 
 - empty or whitespace-only strings become `None`
 - strings that look like Python list literals are parsed into lists
+- column headers are lowercased and stripped of surrounding whitespace
 
 The `upload` command accepts an `--encoding` option to specify the file's character set:
 

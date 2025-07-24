@@ -63,7 +63,7 @@ def upload_csv_data(
     """
     with open(csv_file_path, newline="", encoding=encoding) as csvfile:
         reader = csv.DictReader(csvfile)
-        reader.fieldnames = [name.lower() for name in reader.fieldnames]
+        reader.fieldnames = [name.strip().lower() for name in reader.fieldnames]
         for row in reader:
             sanitized = sanitize_row(row)
             if (

@@ -105,3 +105,17 @@ def test_upsert_when_id_uppercase(tmp_path):
 
     upsert.assert_called_once_with("posts", "1", {"name": "A"})
 
+
+def test_upsert_when_id_header_has_whitespace(tmp_path):
+    csv_file = tmp_path / "data.csv"
+    with open(csv_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow([" id ", "name"])
+        writer.writerow(["1", "A"])
+
+    api = NocoAPI("http://api", "token")
+    with mock.patch.object(api, "upsert_record") as upsert:
+        upload_csv_data(str(csv_file), "posts", api, use_upsert=True)
+
+    upsert.assert_called_once_with("posts", "1", {"name": "A"})
+
