@@ -36,6 +36,11 @@ def main() -> None:
         default="utf-8",
         help="Encoding of the CSV file (default: utf-8)",
     )
+    up.add_argument(
+        "--use-upsert",
+        action="store_true",
+        help="Use upsert when an id column is present",
+    )
 
     args = parser.parse_args()
 
@@ -51,7 +56,11 @@ def main() -> None:
         )
     elif args.command == "upload":
         upload_csv_data(
-            args.csv_file, args.collection, api, encoding=args.encoding
+            args.csv_file,
+            args.collection,
+            api,
+            encoding=args.encoding,
+            use_upsert=args.use_upsert,
         )
 
 
