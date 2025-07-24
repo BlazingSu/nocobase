@@ -33,7 +33,13 @@ def sanitize_row(row: Dict[str, Any], *, parse_lists: bool = True) -> Dict[str, 
     return sanitized
 
 
-def upload_csv_data(csv_file_path: str, collection_name: str, api: NocoAPI) -> None:
+def upload_csv_data(
+    csv_file_path: str,
+    collection_name: str,
+    api: NocoAPI,
+    *,
+    encoding: str = "utf-8",
+) -> None:
     """Upload records from a CSV file to a NocoBase collection.
 
     Parameters
@@ -44,8 +50,10 @@ def upload_csv_data(csv_file_path: str, collection_name: str, api: NocoAPI) -> N
         Name of the collection to upload records to.
     api: NocoAPI
         Authenticated API client.
+    encoding: str, optional
+        Character encoding used when reading ``csv_file_path``.
     """
-    with open(csv_file_path, newline="", encoding="utf-8") as csvfile:
+    with open(csv_file_path, newline="", encoding=encoding) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             api.create_record(collection_name, sanitize_row(row))
