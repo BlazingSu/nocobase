@@ -15,21 +15,18 @@ def sanitize_row(row: Dict[str, Any], *, parse_lists: bool = True) -> Dict[str, 
 
     sanitized: Dict[str, Any] = {}
     for key, value in row.items():
-        if isinstance(value, str):
-            text = value.strip()
-            if text == "":
-                sanitized[key] = None
-                continue
+        if value == "":
+            sanitized[key] = None
+            continue
 
-            if parse_lists and text.startswith("[") and text.endswith("]"):
+        if parse_lists and isinstance(value, str):
+            text = value.strip()
+            if text.startswith("[") and text.endswith("]"):
                 try:
                     sanitized[key] = ast.literal_eval(text)
                     continue
                 except (ValueError, SyntaxError):  # pragma: no cover - safety
                     pass
-
-            sanitized[key] = text
-            continue
 
         sanitized[key] = value
 
