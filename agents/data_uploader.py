@@ -60,9 +60,14 @@ def upload_csv_data(
     """
     with open(csv_file_path, newline="", encoding=encoding) as csvfile:
         reader = csv.DictReader(csvfile)
+        reader.fieldnames = [name.lower() for name in reader.fieldnames]
         for row in reader:
             sanitized = sanitize_row(row)
-            if use_upsert and "id" in sanitized and sanitized["id"] is not None:
+            if (
+                use_upsert
+                and any(k.lower() == "id" for k in row)
+                and sanitized.get("id") is not None
+            ):
                 record_id = sanitized.pop("id")
                 api.upsert_record(collection_name, record_id, sanitized)
             else:
