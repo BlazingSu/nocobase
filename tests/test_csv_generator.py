@@ -34,7 +34,12 @@ def test_generate_csv_ignore_extra_fields(tmp_path):
 def test_generate_template(tmp_path):
     csv_file = tmp_path / "template.csv"
     api = mock.Mock()
-    api.list_fields.return_value = [{"name": "id"}, {"name": "name"}]
+    api.list_fields.return_value = [
+        {"name": "id"},
+        {"name": "name"},
+        {"name": "calc", "interface": "formula"},
+        {"name": "author", "type": "belongsTo"},
+    ]
 
     csv_generator.generate_template(str(csv_file), "posts", api, include_data=False)
 
@@ -49,8 +54,15 @@ def test_generate_template(tmp_path):
 def test_generate_template_with_data(tmp_path):
     csv_file = tmp_path / "template.csv"
     api = mock.Mock()
-    api.list_fields.return_value = [{"name": "id"}, {"name": "name"}]
-    api.list_records.return_value = [{"id": 1, "name": "A", "extra": "x"}]
+    api.list_fields.return_value = [
+        {"name": "id"},
+        {"name": "name"},
+        {"name": "calc", "interface": "formula"},
+        {"name": "author", "type": "hasOne"},
+    ]
+    api.list_records.return_value = [
+        {"id": 1, "name": "A", "calc": 2, "author": 5}
+    ]
 
     csv_generator.generate_template(str(csv_file), "posts", api, include_data=True)
 
