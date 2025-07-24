@@ -40,6 +40,21 @@ generate_csv("output.csv", field_names, records,
              image_field="image", image_url=image_url)
 ```
 
+## Uploading CSV Data
+
+`upload_csv_data` sanitizes each row before sending it to the API:
+
+- empty strings become `None`
+- strings that look like Python list literals are parsed into lists
+
+The `upload` command accepts an `--encoding` option to specify the file's character set:
+
+```bash
+python main.py upload http://localhost:13000/api user pass posts data.csv --encoding latin-1
+```
+
+If the CSV includes an `id` column you can pass `--use-upsert` so existing records are updated. This internally calls `NocoAPI.upsert_record`.
+
 ## Running the Tests
 
 Unit tests are provided for each module. Use `pytest` with the current
