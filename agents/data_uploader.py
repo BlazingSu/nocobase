@@ -39,6 +39,7 @@ def upload_csv_data(
     api: NocoAPI,
     *,
     encoding: str = "utf-8",
+    use_upsert: bool = False,
 ) -> None:
     """Upload records from a CSV file to a NocoBase collection.
 
@@ -52,9 +53,18 @@ def upload_csv_data(
         Authenticated API client.
     encoding: str, optional
         Character encoding used when reading ``csv_file_path``.
+    use_upsert: bool, optional
+        When ``True`` and the CSV contains an ``id`` column, use
+        :meth:`NocoAPI.upsert_record` instead of
+        :meth:`NocoAPI.create_record`.
     """
     with open(csv_file_path, newline="", encoding=encoding) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            api.create_record(collection_name, sanitize_row(row))
+            sanitized = sanitize_row(row)
+            if use_upsert and "id" in sanitized and sanitized["id"] is not None:
+                record_id = sanitized.pop("id")
+                api.upsert_record(collection_name, record_id, sanitized)
+            else:
+                api.create_record(collection_name, sanitized)
 
