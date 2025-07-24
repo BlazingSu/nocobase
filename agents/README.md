@@ -44,7 +44,7 @@ generate_csv("output.csv", field_names, records,
 
 `upload_csv_data` sanitizes each row before sending it to the API:
 
-- empty strings become `None`
+- empty or whitespace-only strings become `None`
 - strings that look like Python list literals are parsed into lists
 
 The `upload` command accepts an `--encoding` option to specify the file's character set:
