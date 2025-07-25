@@ -3,18 +3,18 @@ import requests
 
 
 def upload_image(api_url: str, token: str, file_collection: str, file_path: str) -> str:
-    """Upload an image to NocoBase and return its URL.
+    """上传图片到 NocoBase 并返回其 URL。
 
-    Parameters
+    参数
     ----------
     api_url: str
-        Base API URL.
+        API 基础地址
     token: str
-        Authentication token.
+        认证 Token
     file_collection: str
-        Collection name for files (e.g., 'attachments').
+        文件集合名称，如 'attachments'
     file_path: str
-        Local path to the image to upload.
+        要上传的本地图片路径
     """
     url = f"{api_url}/{file_collection}:create"
     headers = {"Authorization": f"Bearer {token}"}

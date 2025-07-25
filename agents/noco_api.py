@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 
 class NocoAPI:
-    """Minimal wrapper around NocoBase HTTP API."""
+    """NocoBase HTTP API 的简易封装。"""
 
     def __init__(self, api_url: str, token: str):
         self.api_url = api_url.rstrip('/')
@@ -16,7 +16,7 @@ class NocoAPI:
         }
 
     def list_collections(self) -> List[Dict[str, Any]]:
-        """Return all collections."""
+        """返回所有集合。"""
         url = f"{self.api_url}/collections:list"
         try:
             response = requests.get(url, headers=self._headers())
@@ -26,7 +26,7 @@ class NocoAPI:
             raise RuntimeError(f"Failed to list collections: {exc}") from exc
 
     def list_fields(self, collection_name: str) -> List[Dict[str, Any]]:
-        """Return all fields for a given collection."""
+        """返回指定集合的全部字段。"""
         url = f"{self.api_url}/collections/{collection_name}/fields:list"
         try:
             response = requests.get(
@@ -40,7 +40,7 @@ class NocoAPI:
             raise RuntimeError(f"Failed to list fields: {exc}") from exc
 
     def list_records(self, collection_name: str) -> List[Dict[str, Any]]:
-        """Return all records for a given collection."""
+        """返回指定集合的全部记录。"""
         url = f"{self.api_url}/{collection_name}:list"
         try:
             response = requests.get(
@@ -54,19 +54,19 @@ class NocoAPI:
             raise RuntimeError(f"Failed to list records: {exc}") from exc
 
     def create_record(self, collection_name: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create a record in the specified collection.
+        """在指定集合中创建记录。
 
-        Parameters
+        参数
         ----------
         collection_name: str
-            Name of the collection to insert into.
+            要插入的集合名称
         data: Dict[str, Any]
-            Record data to create.
+            创建的记录内容
 
-        Returns
+        返回
         -------
         Dict[str, Any]
-            Response data from the API.
+            API 返回的数据
         """
         url = f"{self.api_url}/{collection_name}:create"
         try:
@@ -79,21 +79,21 @@ class NocoAPI:
     def update_record(
         self, collection_name: str, record_id: str, data: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Update a record in the specified collection.
+        """更新指定集合中的记录。
 
-        Parameters
+        参数
         ----------
         collection_name: str
-            Name of the collection to update.
+            需要更新的集合名称
         record_id: str
-            Identifier of the record to update.
+            要更新记录的标识
         data: Dict[str, Any]
-            Updated record values.
+            更新后的记录数据
 
-        Returns
+        返回
         -------
         Dict[str, Any]
-            Response data from the API.
+            API 返回的数据
         """
         url = f"{self.api_url}/{collection_name}:update"
         payload = {"filter": {"id": record_id}, "values": data}
@@ -110,11 +110,9 @@ class NocoAPI:
         record_id: str | None,
         data: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Update the record if ``record_id`` is provided, otherwise create it.
+        """若传入 ``record_id`` 则更新记录，否则创建记录。
 
-        When ``record_id`` is specified, the method attempts an update first and
-        falls back to creation if the update fails.
-        """
+        当提供 ``record_id`` 时，方法会先尝试更新，若失败则退回到创建。"""
         if record_id:
             try:
                 return self.update_record(collection_name, record_id, data)

@@ -9,30 +9,30 @@ def authenticate_user(
     password: str | None = None,
     authenticator: str | None = None,
 ) -> str:
-    """Authenticate with the NocoBase API and return a bearer token.
+    """使用 NocoBase API 进行登录并返回 Token。
 
-    Parameters
+    参数
     ----------
     api_url: str
-        Base URL of the NocoBase API (e.g., http://localhost:13000/api)
+        NocoBase API 的基础地址，例如 http://localhost:13000/api
     username: str
-        User email address.
+        用户邮箱地址
     password: str
-        User password.
+        用户密码
     authenticator: str, optional
-        Name of the authenticator. Defaults to "local".
+        认证器名称，默认为 ``"local"``
 
-    Returns
+    返回
     -------
     str
-        Authentication token.
+        登录成功后获取的 Token
 
-    Raises
+    异常
     ------
     requests.RequestException
-        If the authentication request fails.
+        认证请求失败时抛出
     KeyError
-        If the token is missing in the response.
+        响应中缺少 Token 时抛出
     """
     if api_url is None:
         api_url = config.API_URL

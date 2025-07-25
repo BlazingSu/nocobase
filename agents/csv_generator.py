@@ -4,21 +4,27 @@ from typing import Any, Dict, Iterable, List, Optional
 from .noco_api import NocoAPI
 
 
-def generate_csv(csv_file_path: str, field_names: List[str], records: Iterable[Dict[str, Any]], image_field: Optional[str] = None, image_url: Optional[str] = None) -> None:
-    """Generate a CSV file from records.
+def generate_csv(
+    csv_file_path: str,
+    field_names: List[str],
+    records: Iterable[Dict[str, Any]],
+    image_field: Optional[str] = None,
+    image_url: Optional[str] = None,
+) -> None:
+    """根据记录生成 CSV 文件。
 
-    Parameters
+    参数
     ----------
     csv_file_path: str
-        Output CSV file path.
+        输出 CSV 文件的路径
     field_names: List[str]
-        List of field names (column headers).
+        字段名称列表（列头）
     records: Iterable[Dict[str, Any]]
-        Iterable of record dictionaries.
+        记录字典的可迭代对象
     image_field: Optional[str]
-        Field name to insert an image URL.
+        用于放置图片链接的字段名
     image_url: Optional[str]
-        Image URL to insert into each record if `image_field` is given.
+        当提供 ``image_field`` 时，插入到每条记录的图片地址
     """
     with open(csv_file_path, "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(
@@ -39,18 +45,18 @@ def generate_template(
     *,
     include_data: bool = False,
 ) -> None:
-    """Generate a CSV template for a collection.
+    """为指定集合生成 CSV 模板。
 
-    Parameters
+    参数
     ----------
     csv_file_path: str
-        Output CSV file path.
+        模板 CSV 的输出路径
     collection_name: str
-        Name of the collection to inspect for fields.
+        要读取字段信息的集合名称
     api: NocoAPI
-        Authenticated API client used to fetch field information.
+        已认证的 API 客户端
     include_data: bool, optional
-        If ``True`` include existing records in the generated CSV.
+        如果为 ``True``，模板中会包含现有记录
     """
     fields = api.list_fields(collection_name)
 
