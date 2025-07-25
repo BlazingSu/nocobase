@@ -1,7 +1,14 @@
 import requests
 
+from . import config
 
-def authenticate_user(api_url: str, username: str, password: str, authenticator: str = "local") -> str:
+
+def authenticate_user(
+    api_url: str | None = None,
+    username: str | None = None,
+    password: str | None = None,
+    authenticator: str | None = None,
+) -> str:
     """Authenticate with the NocoBase API and return a bearer token.
 
     Parameters
@@ -27,6 +34,15 @@ def authenticate_user(api_url: str, username: str, password: str, authenticator:
     KeyError
         If the token is missing in the response.
     """
+    if api_url is None:
+        api_url = config.API_URL
+    if username is None:
+        username = config.USERNAME
+    if password is None:
+        password = config.PASSWORD
+    if authenticator is None:
+        authenticator = config.AUTHENTICATOR
+
     url = f"{api_url}/auth:signIn"
     headers = {
         "Content-Type": "application/json",
