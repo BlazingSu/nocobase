@@ -40,6 +40,23 @@ generate_csv("output.csv", field_names, records,
              image_field="image", image_url=image_url)
 ```
 
+## Uploading Images From a Folder
+
+`upload_images_in_folder` uploads every file in a directory and returns
+their URLs. You may then export the file manager data to CSV with
+`download_files_csv`:
+
+```python
+from agents.image_uploader import (
+    upload_images_in_folder,
+    download_files_csv,
+)
+
+urls = upload_images_in_folder(api_url, token, "attachments", "./images")
+download_files_csv(api, "attachments", "files.csv")
+print(urls)
+```
+
 ## Uploading CSV Data
 
 `upload_csv_data` sanitizes each row before sending it to the API:
