@@ -81,3 +81,25 @@ NocoBase 支持三种安装方式：
 通过云厂商一键部署 NocoBase，并享受多种部署选项的灵活性：
 
 - [阿里云](https://computenest.console.aliyun.com/service/instance/create/default?type=user&ServiceName=NocoBase%20%E7%A4%BE%E5%8C%BA%E7%89%88)
+### 使用 main.py 示例
+
+仓库根目录的 `main.py` 提供了导出模板和上传 CSV 数据的功能，适合快速批量处理数据。
+
+1. 生成模板：
+   ```bash
+   python main.py template <集合名称> <输出文件> --include-data
+   ```
+   上述命令会创建包含现有字段（可选现有记录）的 CSV 文件。
+2. 上传数据：
+   ```bash
+   python main.py upload <集合名称> <CSV 文件> --use-upsert
+   ```
+   读取本地 CSV 并写入集合，若文件中含有 `id` 列且使用 `--use-upsert`，会根据 `id` 更新或新增记录。
+
+完整示例：
+```bash
+pip install requests
+python main.py template posts posts.csv
+# 编辑 posts.csv 后
+python main.py upload posts posts.csv --use-upsert
+```
