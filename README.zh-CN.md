@@ -103,3 +103,26 @@ python main.py template posts posts.csv
 # 编辑 posts.csv 后
 python main.py upload posts posts.csv --use-upsert
 ```
+
+### 批量上传图片
+
+若需要一次性上传文件夹中的所有图片，可使用 `agents.image_uploader`
+提供的 `upload_images_in_folder` 函数，并可配合 `download_files_csv`
+导出文件管理器数据：
+
+```python
+from agents import config
+from agents.auth import authenticate_user
+from agents.noco_api import NocoAPI
+from agents.image_uploader import upload_images_in_folder, download_files_csv
+
+token = authenticate_user()
+api = NocoAPI(config.API_URL, token)
+
+# 上传文件夹中的所有图片到 attachments 集合
+urls = upload_images_in_folder(config.API_URL, token, "attachments", "./images")
+
+# 可选：将文件管理器中的数据保存为 CSV
+download_files_csv(api, "attachments", "files.csv")
+print(urls)
+```
