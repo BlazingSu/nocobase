@@ -8,7 +8,7 @@ from agents.csv_generator import generate_template
 
 
 def main() -> None:
-    """Generate templates or upload CSV records to NocoBase collections."""
+    """生成模板或将 CSV 记录上传到 NocoBase 集合。"""
     parser = argparse.ArgumentParser(description="NocoBase CSV helper")
     sub = parser.add_subparsers(dest="command", required=True)
 

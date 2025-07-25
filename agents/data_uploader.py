@@ -6,11 +6,10 @@ from .noco_api import NocoAPI
 
 
 def sanitize_row(row: Dict[str, Any], *, parse_lists: bool = True) -> Dict[str, Any]:
-    """Return a sanitized copy of a CSV row.
+    """返回清理后的 CSV 行数据副本。
 
-    Empty strings are converted to ``None``. When ``parse_lists`` is ``True``,
-    values that look like Python list literals are converted to actual lists
-    using :func:`ast.literal_eval`.
+    空字符串会被替换为 ``None``。当 ``parse_lists`` 为 ``True`` 时，
+    类似列表字面量的字符串会通过 :func:`ast.literal_eval` 转换为真正的列表。
     """
 
     sanitized: Dict[str, Any] = {}
@@ -41,22 +40,21 @@ def upload_csv_data(
     encoding: str = "utf-8",
     use_upsert: bool = False,
 ) -> None:
-    """Upload records from a CSV file to a NocoBase collection.
+    """将 CSV 文件中的记录上传到 NocoBase 指定集合。
 
-    Parameters
+    参数
     ----------
     csv_file_path: str
-        Path to the CSV file containing records.
+        CSV 文件路径
     collection_name: str
-        Name of the collection to upload records to.
+        目标集合名称
     api: NocoAPI
-        Authenticated API client.
+        已认证的 API 客户端
     encoding: str, optional
-        Character encoding used when reading ``csv_file_path``.
+        读取 ``csv_file_path`` 时使用的编码
     use_upsert: bool, optional
-        When ``True`` and the CSV contains an ``id`` column, use
-        :meth:`NocoAPI.upsert_record` instead of
-        :meth:`NocoAPI.create_record`.
+        当为 ``True`` 且 CSV 包含 ``id`` 列时，调用 :meth:`NocoAPI.upsert_record`，
+        否则使用 :meth:`NocoAPI.create_record`
     """
     with open(csv_file_path, newline="", encoding=encoding) as csvfile:
         reader = csv.DictReader(csvfile)
