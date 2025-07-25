@@ -20,7 +20,7 @@
 * **处理身份验证**：将身份验证所需的信息直接写入代码，不需要在命令中写明，
 *   API地址：http://erp.vdnet.top:13000/api
 *   用户名：admin@nocobase.com
-*   密码：qaz123456@ products
+*   密码：qaz123456@
 *   authenticator：basic
 *   上传的文件地址以及下载CSV文件地址：C:\Users\Administrator\Desktop\
 * **导出表格数据结构为CSV文件**：通过获取NocoBase中的各个表格（collections）和字段（fields）以及字段记录，将其导出为CSV文件，便于人工填写数据。
