@@ -83,7 +83,7 @@ export const createTableBlockUISchema = (options: {
                 'x-decorator': 'DndContext',
                 'x-component': 'Space',
                 'x-component-props': {
-                  split: '|',
+                  direction: 'vertical',
                 },
               },
             },

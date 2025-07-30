@@ -177,7 +177,7 @@ export class SubTableFieldInterface extends CollectionFieldInterface {
                   type: 'void',
                   'x-component': 'Space',
                   'x-component-props': {
-                    split: '|',
+                    direction: 'vertical',
                   },
                   properties: {
                     update: {
