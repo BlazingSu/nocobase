@@ -125,7 +125,7 @@ const schema: ISchema = {
                   type: 'void',
                   'x-component': 'Space',
                   'x-component-props': {
-                    split: '|',
+                    direction: 'vertical',
                   },
                   properties: {
                     view: {

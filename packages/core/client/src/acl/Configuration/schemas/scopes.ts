@@ -225,7 +225,7 @@ export const scopesSchema: ISchema = {
                           'x-decorator': 'DndContext',
                           'x-component': 'Space',
                           'x-component-props': {
-                            split: '|',
+                            direction: 'vertical',
                           },
                           properties: {
                             edit: {
