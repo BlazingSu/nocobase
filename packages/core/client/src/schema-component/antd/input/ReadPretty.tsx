@@ -10,6 +10,7 @@
 import { css, cx } from '@emotion/css';
 import { usePrefixCls } from '@formily/antd-v5/esm/__builtins__';
 import { useFieldSchema } from '@formily/react';
+import { LinkOutlined } from '@ant-design/icons';
 import { Image } from 'antd';
 import cls from 'classnames';
 import _ from 'lodash';
@@ -214,8 +215,13 @@ ReadPretty.URL = (props: URLReadPrettyProps) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const prefixCls = usePrefixCls('description-url', props);
   const content = props.value && (
-    <a style={props.ellipsis ? ellipsisStyle : undefined} target="_blank" rel="noopener noreferrer" href={props.value}>
-      {props.value}
+    <a
+      style={props.ellipsis ? ellipsisStyle : undefined}
+      target="_blank"
+      rel="noopener noreferrer"
+      href={props.value}
+    >
+      <LinkOutlined />
     </a>
   );
   return (
