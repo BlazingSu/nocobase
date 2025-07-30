@@ -75,7 +75,7 @@ export class AttachmentURLFieldInterface extends CollectionFieldInterface {
     schema['x-component-props']['mode'] = 'AttachmentUrl';
     if (['Table', 'Kanban'].includes(block)) {
       schema['x-component-props']['ellipsis'] = true;
-      schema['x-component-props']['size'] = 'small';
+      schema['x-component-props']['size'] = 'large';
     }
   }
   filterable = {
