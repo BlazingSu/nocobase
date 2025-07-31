@@ -505,6 +505,14 @@ const cellClass = css`
   }
 `;
 
+const actionCellClass = css`
+  white-space: normal;
+  .ant-space {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
 const rowSelectCheckboxWrapperClass = css`
   position: relative;
   display: flex;
@@ -634,8 +642,13 @@ const InternalBodyCellComponent = React.memo<BodyCellComponentProps>((props) => 
     (!!schema?.properties && Object.values(schema.properties).some((item) => item['x-read-pretty'] === true)) ||
     schema?.['x-action-column'] === 'actions';
   const mergedStyle = useMemo(
-    () => ({ overflow: 'hidden', ...props.style, ...dynamicStyle }),
-    [props.style, dynamicStyle],
+    () => ({
+      overflow: 'hidden',
+      ...(schema?.['x-action-column'] === 'actions' ? { whiteSpace: 'normal' } : {}),
+      ...props.style,
+      ...dynamicStyle,
+    }),
+    [props.style, dynamicStyle, schema?.['x-action-column']],
   );
   return (
     <FlagProvider isInTableCell>
@@ -643,7 +656,15 @@ const InternalBodyCellComponent = React.memo<BodyCellComponentProps>((props) => 
       {!_.isEmpty(styleRules) && (
         <GetStyleRules record={record} schema={schema} onStyleChange={isReadPrettyMode ? setDynamicStyle : _.noop} />
       )}
-      <td {...others} className={classNames(props.className, cellClass)} style={mergedStyle}>
+      <td
+        {...others}
+        className={classNames(
+          props.className,
+          cellClass,
+          schema?.['x-action-column'] === 'actions' && actionCellClass,
+        )}
+        style={mergedStyle}
+      >
         {props.children}
       </td>
     </FlagProvider>

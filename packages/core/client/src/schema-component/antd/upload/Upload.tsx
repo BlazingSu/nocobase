@@ -199,6 +199,8 @@ function ReadPretty({ value, onChange, disabled, multiple, size, ...others }: Up
   useUploadStyleVal(prefixCls);
   const { isInTableCell } = useFlag();
 
+  const actualSize = size || (isInTableCell ? 48 : undefined);
+
   const resetStyle = useMemo(() => (isInTableCell ? { display: 'inline-block' } : {}), [isInTableCell]);
 
   return wrapSSR(
@@ -207,12 +209,12 @@ function ReadPretty({ value, onChange, disabled, multiple, size, ...others }: Up
         `${prefixCls}-wrapper`,
         `${prefixCls}-picture-card-wrapper`,
         `nb-upload`,
-        size ? `nb-upload-${size}` : null,
+        actualSize ? `nb-upload-${actualSize}` : null,
         hashId,
         css`
           .ant-upload-list-picture-card-container {
-            width: ${size}px !important;
-            height: ${size}px !important;
+            width: ${actualSize}px !important;
+            height: ${actualSize}px !important;
           }
         `,
       )}
