@@ -4,7 +4,9 @@ networks:
     driver: bridge
 services:
   app:
-    image: nocobase/nocobase:latest
+    build:
+      context: ../../
+      dockerfile: Dockerfile
     networks:
       - nocobase
     environment:
