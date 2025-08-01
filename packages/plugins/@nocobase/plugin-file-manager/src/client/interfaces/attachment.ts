@@ -36,7 +36,8 @@ export class AttachmentFieldInterface extends CollectionFieldInterface {
     }
 
     if (['Table', 'Kanban'].includes(block)) {
-      schema['x-component-props']['size'] = 'small';
+      // Use a larger size for table and kanban blocks for better visibility
+      schema['x-component-props']['size'] = 'large';
     }
 
     schema['x-use-component-props'] = 'useAttachmentFieldProps';
