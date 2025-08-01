@@ -508,6 +508,7 @@ const cellClass = css`
 const actionCellClass = css`
   white-space: normal;
   .ant-space {
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
   }

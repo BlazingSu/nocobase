@@ -244,7 +244,7 @@ const sizes = {
 
 ReadPretty.Preview = function Preview(props: any) {
   const fieldSchema = useFieldSchema();
-  const size = fieldSchema['x-component-props']?.['size'] || 'small';
+  const size = fieldSchema['x-component-props']?.['size'] || 'middle';
   const objectFit = fieldSchema['x-component-props']?.['objectFit'] || 'cover';
 
   if (!props.value) {
