@@ -1,14 +1,20 @@
 FROM node:20-bookworm-slim as builder
 
 ARG CNA_VERSION=latest
+ARG VERDACCIO_URL
 
 WORKDIR /app
 
+RUN echo "Using registry: $VERDACCIO_URL"
+
 RUN cd /app \
   && yarn config set network-timeout 600000 -g \
+  && yarn config set registry "$VERDACCIO_URL" \
   && npx -y create-nocobase-app@${CNA_VERSION} my-nocobase-app --skip-dev-dependencies -a -e APP_ENV=production \
   && cd /app/my-nocobase-app \
+  && yarn config set registry "$VERDACCIO_URL" \
   && yarn install --production \
+  && yarn release:force --registry "$VERDACCIO_URL" \
   && rm -rf yarn.lock \
   && find node_modules -type f -name "yarn.lock" -delete \
   && find node_modules -type f -name "bower.json" -delete \
@@ -17,6 +23,7 @@ RUN cd /app \
 RUN cd /app \
   && rm -rf nocobase.tar.gz \
   && tar -zcf ./nocobase.tar.gz -C /app/my-nocobase-app .
+
 
 FROM node:20-bookworm-slim
 
