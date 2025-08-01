@@ -71,7 +71,7 @@ const size = createSettingsItem({
   name: 'size',
   title: 'Size',
   options: getSizeOptions,
-  defaultValue: 'small',
+  defaultValue: 'middle',
 });
 
 const objectFit = createSettingsItem({
