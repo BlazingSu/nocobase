@@ -2,11 +2,14 @@ version: "3"
 networks:
   nocobase:
     driver: bridge
+
 services:
   app:
     build:
       context: ../../
       dockerfile: Dockerfile
+      args:
+        VERDACCIO_URL: "http://172.17.0.1:10104"  # ✅ 构建参数传入 Dockerfile
     networks:
       - nocobase
     environment:
@@ -17,6 +20,7 @@ services:
       - DB_DATABASE=nocobase
       - DB_USER=nocobase
       - DB_PASSWORD=nocobase
+      - VERDACCIO_URL=http://172.17.0.1:10104    # ✅ 可选：运行时环境变量
     volumes:
       - ./storage:/app/nocobase/storage
     ports:
@@ -24,6 +28,7 @@ services:
     depends_on:
       - postgres
     init: true
+
   postgres:
     image: postgres:10
     restart: always
