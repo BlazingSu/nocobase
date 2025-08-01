@@ -1456,7 +1456,7 @@ export const createTableBlockSchema = (options) => {
                 type: 'void',
                 'x-decorator': 'DndContext',
                 'x-component': 'Space',
-                'x-component-props': {},
+                'x-component-props': { direction: 'vertical' },
                 properties: {},
               },
             },
