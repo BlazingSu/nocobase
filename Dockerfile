@@ -79,6 +79,14 @@ RUN rm -rf /etc/nginx/sites-enabled/default
 COPY ./docker/nocobase/nocobase.conf /etc/nginx/sites-enabled/nocobase.conf
 COPY --from=builder /app/nocobase.tar.gz /app/nocobase.tar.gz
 
+# Extract the application during build so that runtime commands
+# can rely on an existing package.json. This avoids runtime errors
+# when a custom command overrides the default entrypoint and tries
+# to run yarn before the app is unpacked.
+RUN mkdir -p /app/nocobase \
+  && tar -zxf /app/nocobase.tar.gz --absolute-names -C /app/nocobase \
+  && rm /app/nocobase.tar.gz
+
 WORKDIR /app/nocobase
 
 RUN mkdir -p /app/nocobase/storage/uploads/ && echo "$COMMIT_HASH" >> /app/nocobase/storage/uploads/COMMIT_HASH

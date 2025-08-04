@@ -28,12 +28,6 @@ services:
     depends_on:
       - postgres
     init: true
-    command: >
-      sh -c "
-      echo '✔ App started';
-      yarn release:force --registry $VERDACCIO_URL || echo '⚠️ yarn release 失败，跳过...';
-      yarn start
-      "
 
   postgres:
     image: postgres:10
