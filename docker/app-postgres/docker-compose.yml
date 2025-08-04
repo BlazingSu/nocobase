@@ -9,7 +9,7 @@ services:
       context: ../../
       dockerfile: Dockerfile
       args:
-        VERDACCIO_URL: "http://verdaccio:4873"  # 构建阶段不访问它，安全保留
+        VERDACCIO_URL: "https://registry.npmjs.org"
     networks:
       - nocobase
     environment:
@@ -20,21 +20,17 @@ services:
       - DB_DATABASE=nocobase
       - DB_USER=nocobase
       - DB_PASSWORD=nocobase
-      - VERDACCIO_URL=http://registry.npmjs.org
+      - VERDACCIO_URL=https://registry.npmjs.org
     volumes:
       - ./storage:/app/nocobase/storage
     ports:
       - "13000:80"
     depends_on:
       - postgres
-      - verdaccio
     init: true
     command: >
       sh -c "
       echo '✔ App started';
-      echo '⏳ Waiting for verdaccio...';
-      sleep 5;
-      echo '🚀 Running yarn release:force';
       yarn release:force --registry $VERDACCIO_URL || echo '⚠️ yarn release 失败，跳过...';
       yarn start
       "
@@ -52,9 +48,3 @@ services:
     networks:
       - nocobase
 
-  verdaccio:
-    image: verdaccio/verdaccio
-    networks:
-      - nocobase
-    ports:
-      - "4873:4873"
