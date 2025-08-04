@@ -14,7 +14,7 @@ RUN cd /app \
   && cd /app/my-nocobase-app \
   && yarn config set registry "$VERDACCIO_URL" \
   && yarn install --production \
-  && yarn release:force --registry "$VERDACCIO_URL" \
+  && yarn release:force --registry "$VERDACCIO_URL" || echo '⚠️ yarn release failed, skipping...' \
   && rm -rf yarn.lock \
   && find node_modules -type f -name "yarn.lock" -delete \
   && find node_modules -type f -name "bower.json" -delete \
