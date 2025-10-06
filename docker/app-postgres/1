@@ -1,0 +1,77 @@
+version: "3"
+networks:
+  nocobase:
+    driver: bridge
+
+services:
+  # Nginx反向代理服务 - 新增
+  nginx:
+    image: nginx:alpine
+    container_name: nocobase-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"    # HTTP端口，用于重定向到HTTPS
+      - "443:443"  # HTTPS端口
+    volumes:
+      # 挂载Nginx配置文件目录
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      # 挂载SSL证书目录
+      - ./nginx/ssl:/etc/nginx/ssl
+      # 可选：挂载Nginx日志目录
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - nocobase
+    depends_on:
+      - app
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 原有的NocoBase应用服务 - 需要稍作修改
+  app:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+      args:
+        VERDACCIO_URL: "https://registry.npmjs.org"
+    container_name: nocobase-app
+    networks:
+      - nocobase
+    environment:
+      - APP_KEY=your-secret-key
+      - ENCRYPTION_FIELD_KEY=your-secret-key
+      - DB_DIALECT=postgres
+      - DB_HOST=postgres
+      - DB_DATABASE=nocobase
+      - DB_USER=nocobase
+      - DB_PASSWORD=nocobase
+      - VERDACCIO_URL=https://registry.npmjs.org
+    volumes:
+      - ./storage:/app/nocobase/storage
+    # 修改：不再直接暴露13000端口到主机，只通过Nginx访问
+    # ports:
+    #   - "13000:80"
+    expose:
+      - "80"  # 只暴露给Docker内部网络
+    depends_on:
+      - postgres
+    init: true
+    restart: unless-stopped
+
+  # 原有的PostgreSQL服务 - 保持不变
+  postgres:
+    image: postgres:10
+    container_name: nocobase-postgres
+    restart: always
+    command: postgres -c wal_level=logical
+    environment:
+      POSTGRES_USER: nocobase
+      POSTGRES_DB: nocobase
+      POSTGRES_PASSWORD: nocobase
+    volumes:
+      - ./storage/db/postgres:/var/lib/postgresql/data
+    networks:
+      - nocobase

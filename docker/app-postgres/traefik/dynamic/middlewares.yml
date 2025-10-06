@@ -20,7 +20,7 @@
     traefik-dashboard:
       entryPoints:
         - websecure
-      rule: Host(`${TRAEFIK_DASHBOARD_DOMAIN:-dashboard.${TRAEFIK_DOMAIN:-lwwl.cc}}`)
+      rule: Host(`dashboard.lwwl.cc`)
       service: api@internal
       tls:
         certResolver: dnspod

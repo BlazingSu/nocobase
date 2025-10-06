@@ -24,7 +24,7 @@ providers:
 certificatesResolvers:
   dnspod:
     acme:
-      email: ${TRAEFIK_ACME_EMAIL}
+      email: "tj1779895176@gmail.com"
       storage: /etc/traefik/acme.json
       keyType: RSA4096
       dnsChallenge:
