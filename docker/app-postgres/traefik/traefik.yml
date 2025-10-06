@@ -1,0 +1,51 @@
+﻿entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":443"
+    http:
+      tls: {}
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    watch: true
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+certificatesResolvers:
+  dnspod:
+    acme:
+      email: ${TRAEFIK_ACME_EMAIL}
+      storage: /etc/traefik/acme.json
+      keyType: RSA4096
+      dnsChallenge:
+        provider: dnspod
+        delayBeforeCheck: 0
+        resolvers:
+          - "1.12.12.12:53"
+          - "223.5.5.5:53"
+          - "8.8.8.8:53"
+
+log:
+  level: INFO
+
+accessLog: {}
+
+api:
+  dashboard: true
+  insecure: false
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      sniStrict: true

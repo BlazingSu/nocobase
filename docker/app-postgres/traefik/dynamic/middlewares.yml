@@ -1,0 +1,28 @@
+﻿http:
+  middlewares:
+    nocobase-security-headers:
+      headers:
+        frameDeny: true
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        customResponseHeaders:
+          X-Content-Type-Options: nosniff
+          X-Frame-Options: DENY
+          Referrer-Policy: no-referrer-when-downgrade
+          Permissions-Policy: >-
+            accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(),
+            encrypted-media=(), fullscreen=*, geolocation=(), gyroscope=(), magnetometer=(),
+            microphone=(), midi=(), payment=(), picture-in-picture=*, usb=()
+    nocobase-compress:
+      compress: {}
+  routers:
+    traefik-dashboard:
+      entryPoints:
+        - websecure
+      rule: Host(`${TRAEFIK_DASHBOARD_DOMAIN:-dashboard.${TRAEFIK_DOMAIN:-lwwl.cc}}`)
+      service: api@internal
+      tls:
+        certResolver: dnspod
+      middlewares:
+        - nocobase-security-headers

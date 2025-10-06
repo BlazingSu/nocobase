@@ -4,6 +4,25 @@ networks:
     driver: bridge
 
 services:
+  traefik:
+    image: traefik:v2.11
+    restart: always
+    networks:
+      - nocobase
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./traefik/acme.json:/etc/traefik/acme.json
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - TRAEFIK_ACME_EMAIL=${TRAEFIK_ACME_EMAIL:?Set TRAEFIK_ACME_EMAIL}
+      - DNSPOD_API_KEY=${TRAEFIK_DNSPOD_API_KEY:?Set TRAEFIK_DNSPOD_API_KEY}
+      - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN:-lwwl.cc}
+      - TRAEFIK_DASHBOARD_DOMAIN=${TRAEFIK_DASHBOARD_DOMAIN:-dashboard.lwwl.cc}
+
   app:
     build:
       context: ../../
@@ -23,11 +42,23 @@ services:
       - VERDACCIO_URL=https://registry.npmjs.org
     volumes:
       - ./storage:/app/nocobase/storage
-    ports:
-      - "13000:80"
+    expose:
+      - "80"
     depends_on:
       - postgres
     init: true
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=nocobase
+      - traefik.http.services.nocobase.loadbalancer.server.port=80
+      - traefik.http.services.nocobase.loadbalancer.passhostheader=true
+      - traefik.http.routers.nocobase.rule=Host(`${TRAEFIK_DOMAIN:-lwwl.cc}`) || Host(`www.${TRAEFIK_DOMAIN:-lwwl.cc}`)
+      - traefik.http.routers.nocobase.entrypoints=websecure
+      - traefik.http.routers.nocobase.tls=true
+      - traefik.http.routers.nocobase.tls.certresolver=dnspod
+      - traefik.http.routers.nocobase.tls.domains[0].main=${TRAEFIK_DOMAIN:-lwwl.cc}
+      - traefik.http.routers.nocobase.tls.domains[0].sans=*.${TRAEFIK_DOMAIN:-lwwl.cc}
+      - traefik.http.routers.nocobase.middlewares=nocobase-compress@file,nocobase-security-headers@file
 
   postgres:
     image: postgres:10
@@ -41,4 +72,3 @@ services:
       - ./storage/db/postgres:/var/lib/postgresql/data
     networks:
       - nocobase
-
